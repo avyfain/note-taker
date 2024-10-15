@@ -1,0 +1,5 @@
+pywhispercpp
+sounddevice
+llama-cpp-python
+platformdirs
+resampy
