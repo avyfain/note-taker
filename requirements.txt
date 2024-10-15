@@ -1,5 +1,8 @@
-pywhispercpp
 sounddevice
 llama-cpp-python
 platformdirs
 resampy
+textual
+numpy
+rich
+faster_whisper

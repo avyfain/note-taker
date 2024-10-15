@@ -1,14 +1,12 @@
 import datetime
 from typing import Optional
 
-from rich.console import Console
 from rich.panel import Panel
 from rich import box
 
-from textual import on, work
+from textual import work
 from textual.app import App, ComposeResult
 from textual.widgets import Static, ListView, ListItem
-from textual.reactive import reactive
 from textual.containers import Grid
 from textual.widgets import Header, Static, Footer, TextArea, Button, Label
 from textual.screen import Screen, ModalScreen
@@ -58,8 +56,7 @@ class NoteListView(ListView):
 
 
 class NoteTextArea(TextArea):
-    BINDINGS = [
-    ]
+    BINDINGS = []
 
     def __init__(self, uuid: str, content: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,9 +72,7 @@ class NoteTextArea(TextArea):
             self.cursor_location = (len(lines) - 1, len(lines[-1]))
 
     def on_text_area_changed(self, changed: TextArea.Changed):
-        self.note_manager.update_note_content(
-            self.uuid, changed.text_area.text
-        )
+        self.note_manager.update_note_content(self.uuid, changed.text_area.text)
 
 
 class NoteEditScreen(Screen):
@@ -121,6 +116,7 @@ class NoteEditScreen(Screen):
         for response in LanguageModel().generate_response(note_content):
             self.log.info(response)
             textArea.text += response
+
 
 class LiveNoteEditScreen(Screen):
     BINDINGS = [
@@ -224,8 +220,3 @@ class RichNoteTakingScreen(Screen):
 class RichNoteTakingApp(App):
     def on_mount(self):
         self.push_screen(RichNoteTakingScreen())
-
-
-if __name__ == "__main__":
-    app = RichNoteTakingApp()
-    app.run()

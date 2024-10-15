@@ -3,6 +3,7 @@ import json
 import uuid
 import platformdirs
 
+
 class NoteManager:
     _instance = None
 
@@ -12,7 +13,7 @@ class NoteManager:
         return cls._instance
 
     def __init__(self, notes_directory=None):
-        if hasattr(self, '_initialized') and self._initialized:
+        if hasattr(self, "_initialized") and self._initialized:
             return
         if notes_directory is None:
             notes_directory = platformdirs.user_data_dir("notes", "NoteTakingApp")

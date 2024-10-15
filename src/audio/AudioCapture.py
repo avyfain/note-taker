@@ -7,6 +7,7 @@ import resampy
 import wave
 from textual import log
 
+
 def print_audio_devices():
     log.info("Available audio devices:")
     devices = sd.query_devices()
@@ -15,15 +16,19 @@ def print_audio_devices():
             f"{i}: {device['name']} (Max channels: In={device['max_input_channels']}, Out={device['max_output_channels']})"
         )
 
+
 from typing import Callable
 
 # Define a callable type with input types and return type
 AudioDataCallback = Callable[[np.ndarray], None]
 
+
 class AudioCapture:
     def __init__(
-        self, audio_data_callback: AudioDataCallback, 
-        target_sample_rate=16000, block_duration=0.05
+        self,
+        audio_data_callback: AudioDataCallback,
+        target_sample_rate=16000,
+        block_duration=0.05,
     ):
         self.target_sample_rate = target_sample_rate
         self.block_duration = block_duration
@@ -126,7 +131,7 @@ class AudioCapture:
         Normalize the audio to a target RMS level in dB.
         """
         rms = np.sqrt(np.mean(audio**2))
-        target_rms = 10**(target_level / 20)
+        target_rms = 10 ** (target_level / 20)
         gain = target_rms / (rms + 1e-9)  # Add small value to avoid division by zero
         return audio * gain
 
@@ -167,7 +172,8 @@ class AudioCapture:
                 if (
                     self.last_mic_data is not None
                     and self.last_desktop_data is not None
-                    and self.new_mic_data and self.new_desktop_data
+                    and self.new_mic_data
+                    and self.new_desktop_data
                 ):
                     # Normalize audio levels
                     normalized_mic = self.last_mic_data
@@ -199,18 +205,19 @@ class AudioCapture:
                 continue
 
 
-
 # Global variable to hold the WAV file object
 wav_file = None
+
 
 def example_callback(audio_data):
     global wav_file
     if wav_file is not None:
         # Convert float32 audio data to int16
         audio_data_int = (audio_data * 32767).astype(np.int16)
-        
+
         # Write the audio data to the WAV file
         wav_file.writeframes(audio_data_int.tobytes())
+
 
 def main():
     global wav_file
@@ -232,13 +239,14 @@ def main():
     except KeyboardInterrupt:
         log.info("Stopping recording...")
     finally:
-        if hasattr(audio_capture, 'stop_recording'):
+        if hasattr(audio_capture, "stop_recording"):
             audio_capture.stop_recording()
-        
+
         # Close the WAV file
         if wav_file is not None:
             wav_file.close()
             log.info("Recording saved to streaming_recording.wav")
+
 
 if __name__ == "__main__":
     main()

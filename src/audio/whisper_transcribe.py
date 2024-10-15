@@ -5,6 +5,7 @@ import threading
 import multiprocessing as mp
 from textual import log
 
+
 class ContinuousTranscriberProcess:
     def __init__(
         self,
@@ -24,11 +25,11 @@ class ContinuousTranscriberProcess:
         # check if the process is running
         if not self.is_running():
             return
-        
+
         # check if the audio data is float32
         if audio_data.dtype != np.float32:
             raise ValueError("Audio data must be float32")
-        
+
         # put the audio data into the queue
         self.input_queue.put(audio_data)
 
@@ -59,7 +60,10 @@ class ContinuousTranscriberProcess:
         self.result_thread.join()
 
     def is_running(self):
-        return self.transcription_process is not None and self.transcription_process.is_alive()
+        return (
+            self.transcription_process is not None
+            and self.transcription_process.is_alive()
+        )
 
     def _result_loop(self):
         while not self.stop_event.is_set():
@@ -105,7 +109,7 @@ class ContinuousTranscriberProcess:
 
             if current_audio.size >= buffer_size:
                 current_audio = np.array([])
-                is_partial = False # final transcription 
+                is_partial = False  # final transcription
 
             # concatenate segments and call the callback
             text = ""
