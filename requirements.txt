@@ -7,3 +7,4 @@ numpy
 rich
 faster_whisper
 huggingface_hub
+pyinstaller==6.10.0
