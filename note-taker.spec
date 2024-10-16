@@ -21,7 +21,8 @@ note_taker_sources = [
     'src/audio/whisper_transcribe.py',
     'src/llm/model.py',
     'src/notes/manager.py',
-    'src/utils/helpers.py'
+    'src/utils/helpers.py',
+    'src/utils/resource_path.py'
 ]
 
 datas = [
