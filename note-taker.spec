@@ -108,8 +108,6 @@ else:
         a.binaries,
         a.datas,
         a.scripts,
-        splash,
-        splash.binaries,
         name='note-taker',
         debug=args.debug is not None and args.debug,
         bootloader_ignore_signals=False,
