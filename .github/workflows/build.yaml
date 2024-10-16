@@ -32,7 +32,11 @@ jobs:
             runs-on: ubuntu-latest
           - os: windows-latest
             python-version: '3.11'
-            target: windows
+            target: windows-cpu
+            runs-on: windows-latest
+          - os: windows-latest
+            python-version: '3.11'
+            target: windows-cuda
             runs-on: windows-latest
 
     runs-on: ${{ matrix.runs-on }}
@@ -56,19 +60,21 @@ jobs:
           Remove-Item -Recurse -Force pyinstaller-6.10.0
           Remove-Item -Force pyinstaller-6.10.0.zip
 
+      - name: Install MacOS Arm64 llama-cpp-python
+        if: matrix.os == 'macos-arm64'
+        run: |
+          pip install llama-cpp-python \
+            --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
+
+      - name: Install Windows CUDA llama-cpp-python
+        if: matrix.os == 'windows-latest' && matrix.target == 'windows-cuda'
+        run: |
+          pip install llama-cpp-python \
+            --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+
       - name: Install dependencies
         run: |
           python -m pip install -r requirements.txt
-
-      # - name: Install MacOS dependencies
-      #   if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
-      #   run: |
-      #     pip install -r requirements-mac.txt
-
-      # - name: Install Windows dependencies
-      #   if: matrix.os == 'windows-latest'
-      #   run: |
-      #     python -m pip install -r requirements-win.txt
 
       - name: Import Apple Certificate
         if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
@@ -123,13 +129,22 @@ jobs:
         env:
           APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
 
-      - name: Build with PyInstaller (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Build with PyInstaller (Windows CPU)
+        if: matrix.os == 'windows-latest' && matrix.target == 'windows-cpu'
         run: |
           if ("${{ github.event_name }}" -eq "pull_request") {
             pyinstaller --clean --noconfirm note-taker.spec -- --win --debug
           } else {
             pyinstaller --clean --noconfirm note-taker.spec -- --win
+          }
+
+      - name: Build with PyInstaller (Windows CUDA)
+        if: matrix.os == 'windows-latest' && matrix.target == 'windows-cuda'
+        run: |
+          if ("${{ github.event_name }}" -eq "pull_request") {
+            pyinstaller --clean --noconfirm note-taker.spec -- --win --cuda --debug
+          } else {
+            pyinstaller --clean --noconfirm note-taker.spec -- --win --cuda
           }
 
       - name: Build with PyInstaller (Linux)
@@ -188,16 +203,16 @@ jobs:
       - name: Create zip on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          Compress-Archive -Path "dist/note-taker-setup.exe" -DestinationPath "./note-taker.zip"
+          Compress-Archive -Path "dist/note-taker-setup.exe" -DestinationPath "./note-taker-${{ matrix.target }}.zip"
         shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: note-taker-${{ matrix.target }}
-          # only upload exe on windows, tar on linux, dmg on macos
           path: |
             note-taker-macos-arm64.dmg
             note-taker-macos-x86.dmg
             note-taker.tar
-            note-taker.zip
+            note-taker-windows-cpu.zip
+            note-taker-windows-cuda.zip
