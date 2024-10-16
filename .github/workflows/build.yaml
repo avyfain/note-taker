@@ -63,14 +63,12 @@ jobs:
       - name: Install MacOS Arm64 llama-cpp-python
         if: matrix.os == 'macos-arm64'
         run: |
-          pip install llama-cpp-python \
-            --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
+          python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
 
       - name: Install Windows CUDA llama-cpp-python
         if: matrix.os == 'windows-latest' && matrix.target == 'windows-cuda'
         run: |
-          pip install llama-cpp-python \
-            --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+          python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
 
       - name: Install dependencies
         run: |
