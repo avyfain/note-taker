@@ -45,29 +45,78 @@ a = Analysis(
 )
 pyz = PYZ(a.pure)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    [],
-    exclude_binaries=True,
-    name='note-taker',
-    debug=args.debug is not None and args.debug,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    console=True,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
-    entitlements_file='./entitlements.plist',
-)
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='note-taker',
-)
+if args.win:
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name='note-taker',
+        debug=args.debug is not None and args.debug,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        console=True,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+        codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
+        entitlements_file='./entitlements.plist',
+    )
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.datas,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        name='note-taker',
+    )
+elif args.mac_osx:
+    exe = EXE(
+        pyz,
+        a.binaries,
+        a.datas,
+        a.scripts,
+        name='note-taker',
+        debug=args.debug is not None and args.debug,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        console=True,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+        codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
+        entitlements_file='./entitlements.plist',
+    )
+    app = BUNDLE(
+        exe,
+        name='note-taker.app',
+        bundle_identifier='ai.locaal.note-taker',
+        version='0.0.1',
+        info_plist={
+            'NSPrincipalClass': 'NSApplication',
+            'NSAppleScriptEnabled': False,
+            'NSCameraUsageDescription': 'Getting images from the camera to perform OCR',
+            'NSMicrophoneUsageDescription': 'Record the microphone for speech recognition',
+        }
+    )
+else:
+    exe = EXE(
+        pyz,
+        a.binaries,
+        a.datas,
+        a.scripts,
+        splash,
+        splash.binaries,
+        name='note-taker',
+        debug=args.debug is not None and args.debug,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        console=True,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+    )
