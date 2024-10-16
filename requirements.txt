@@ -6,3 +6,4 @@ textual
 numpy
 rich
 faster_whisper
+huggingface_hub
