@@ -16,30 +16,19 @@ jobs:
     needs: check-format
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-x86, macos-arm64, windows-latest]
         include:
-          - os: macos-x86
-            python-version: '3.11'
+          - os: macos-12
             target: macos-x86
-            runs-on: macos-12
-          - os: macos-arm64
-            python-version: '3.11'
+          - os: macos-latest
             target: macos-arm64
-            runs-on: macos-latest
           - os: ubuntu-latest
-            python-version: '3.11'
             target: linux
-            runs-on: ubuntu-latest
           - os: windows-latest
-            python-version: '3.11'
             target: windows-cpu
-            runs-on: windows-latest
           - os: windows-latest
-            python-version: '3.11'
             target: windows-cuda
-            runs-on: windows-latest
 
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
@@ -47,10 +36,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11'
 
       - name: Install pyinstaller for Windows
-        if: matrix.os == 'windows-latest'
+        if: startsWith(matrix.os, 'windows')
         run: |
           Invoke-WebRequest -Uri https://github.com/pyinstaller/pyinstaller/archive/refs/tags/v6.10.0.zip -OutFile pyinstaller-6.10.0.zip
           Expand-Archive -Path pyinstaller-6.10.0.zip -DestinationPath .
@@ -60,13 +49,19 @@ jobs:
           Remove-Item -Recurse -Force pyinstaller-6.10.0
           Remove-Item -Force pyinstaller-6.10.0.zip
 
-      - name: Install MacOS Arm64 llama-cpp-python
-        if: matrix.os == 'macos-arm64'
+      - name: Install MacOS llama-cpp-python
+        if: startsWith(matrix.os, 'macos')
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
 
       - name: Install Windows CUDA llama-cpp-python
-        if: matrix.os == 'windows-latest' && matrix.target == 'windows-cuda'
+        if: matrix.target == 'windows-cpu'
+        run: |
+          $env:CMAKE_ARGS = "-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"
+          pip install llama-cpp-python
+
+      - name: Install Windows CUDA llama-cpp-python
+        if: matrix.target == 'windows-cuda'
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
 
@@ -75,7 +70,7 @@ jobs:
           python -m pip install -r requirements.txt
 
       - name: Import Apple Certificate
-        if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
+        if: startsWith(matrix.os, 'macos')
         run: |
           if security list-keychains | grep -q "github_build.keychain"; then
             security delete-keychain github_build.keychain
@@ -94,13 +89,13 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
       - name: Unlock keychain on Mac
-        if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
+        if: startsWith(matrix.os, 'macos')
         run: |
           security unlock-keychain -p "" github_build.keychain
           security set-key-partition-list -S apple-tool:,apple: -k "" -D "Developer" -t private github_build.keychain
 
       - name: List available signing identities
-        if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
+        if: startsWith(matrix.os, 'macos')
         run: |
           security find-identity -v -p codesigning
 
@@ -121,14 +116,14 @@ jobs:
         shell: pwsh
 
       - name: Build with PyInstaller (MacOS)
-        if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
+        if: startsWith(matrix.os, 'macos')
         run: |
           pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx
         env:
           APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
 
       - name: Build with PyInstaller (Windows CPU)
-        if: matrix.os == 'windows-latest' && matrix.target == 'windows-cpu'
+        if: matrix.target == 'windows-cpu'
         run: |
           if ("${{ github.event_name }}" -eq "pull_request") {
             pyinstaller --clean --noconfirm note-taker.spec -- --win --debug
@@ -137,7 +132,7 @@ jobs:
           }
 
       - name: Build with PyInstaller (Windows CUDA)
-        if: matrix.os == 'windows-latest' && matrix.target == 'windows-cuda'
+        if: matrix.target == 'windows-cuda'
         run: |
           if ("${{ github.event_name }}" -eq "pull_request") {
             pyinstaller --clean --noconfirm note-taker.spec -- --win --cuda --debug
@@ -151,12 +146,12 @@ jobs:
           pyinstaller --clean --noconfirm note-taker.spec
 
       - name: Zip Application for Notarization
-        if: (matrix.os == 'macos-x86' || matrix.os == 'macos-arm64') && github.event_name != 'pull_request'
+        if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
         run: |
           ditto -c -k --keepParent dist/note-taker.app note-taker.zip
 
       - name: Notarize and Staple
-        if: (matrix.os == 'macos-x86' || matrix.os == 'macos-arm64') && github.event_name != 'pull_request'
+        if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
         run: |
           xcrun notarytool submit note-taker.zip --apple-id \
             "${{ secrets.APPLE_DEVELOPER_ID_USER }}" --password \
@@ -166,7 +161,7 @@ jobs:
           xcrun stapler staple dist/note-taker.app
 
       - name: Verify Notarization
-        if: (matrix.os == 'macos-x86' || matrix.os == 'macos-arm64') && github.event_name != 'pull_request'
+        if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
         run: |
           spctl -a -v dist/note-taker.app
           rm note-taker.zip
@@ -193,7 +188,7 @@ jobs:
           tar -cvf note-taker.tar -C dist note-taker
 
       - name: Create dmg MacOS
-        if: matrix.os == 'macos-x86' || matrix.os == 'macos-arm64'
+        if: startsWith(matrix.os, 'macos')
         run: |
           chmod a+x dist/note-taker.app
           hdiutil create -volname "note-taker" -srcfolder dist/note-taker.app -ov -format UDRO note-taker-${{ matrix.target }}.dmg
