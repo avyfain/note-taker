@@ -179,7 +179,6 @@ class RichNoteTakingScreen(Screen):
     def __init__(self):
         super().__init__()
         self.note_manager = NoteManager()
-        LanguageModel()
 
     def compose(self):
         yield Header()

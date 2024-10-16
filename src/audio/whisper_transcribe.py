@@ -4,6 +4,11 @@ import faster_whisper
 import threading
 import multiprocessing as mp
 from textual import log
+from dotenv import load_dotenv
+import os
+from utils import resource_path
+
+load_dotenv(resource_path.resource_path(".env"))
 
 
 class ContinuousTranscriberProcess:
@@ -58,6 +63,8 @@ class ContinuousTranscriberProcess:
             self.transcription_process.join()
             self.transcription_process = None
         self.result_thread.join()
+        self.input_queue.close()
+        self.result_queue.close()
 
     def is_running(self):
         return (
@@ -83,7 +90,9 @@ class ContinuousTranscriberProcess:
         log.info("Starting transcription process...")
 
         model = faster_whisper.WhisperModel(
-            "small.en", device="cuda", compute_type="float16"
+            "small.en",
+            device=os.environ["WHISPER_EXEC_BACKEND"],
+            compute_type=os.environ["WHISPER_COMPUTE_TYPE"],
         )
 
         current_audio = np.array([])
@@ -92,11 +101,11 @@ class ContinuousTranscriberProcess:
         while not stop_event.is_set():
             any_audio_to_process = False
 
-            if input_queue.qsize() > 0:
+            if not input_queue.empty():
                 any_audio_to_process = True
 
                 # read from the queue into the current audio buffer
-                while input_queue.qsize() > 0:
+                while not input_queue.empty():
                     current_audio = np.append(current_audio, input_queue.get())
 
             if not any_audio_to_process:

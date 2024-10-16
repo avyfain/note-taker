@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-12
+          - os: macos-13
             target: macos-x86
           - os: macos-latest
             target: macos-arm64

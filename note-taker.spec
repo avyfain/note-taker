@@ -26,7 +26,8 @@ note_taker_sources = [
 ]
 
 datas = [
-    ('src/main.tcss', '.')
+    ('src/main.tcss', '.'),
+    ('.env', '.')
 ]
 
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
@@ -42,7 +43,18 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['PyQt6', 'tensorflow', 'tkinter', 'nltk', 'django', 'torch', 'torchvision', 'torchaudio'],
+    excludes=[
+        'PyQt6',
+        'tensorflow',
+        'tkinter',
+        'nltk',
+        'django',
+        'torch',
+        'torchvision',
+        'torchaudio',
+        'av',
+        'faster_whisper.audio'
+    ],
     noarchive=False,
 )
 pyz = PYZ(a.pure)
@@ -62,8 +74,6 @@ if args.win:
         disable_windowed_traceback=False,
         argv_emulation=False,
         target_arch=None,
-        codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
-        entitlements_file='./entitlements.plist',
     )
     coll = COLLECT(
         exe,
