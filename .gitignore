@@ -160,3 +160,7 @@ Temporary Items
 .apdisk
 
 *.wav
+
+# VS Code
+.vscode/
+.history/

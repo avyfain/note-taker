@@ -99,21 +99,24 @@ jobs:
         run: |
           security find-identity -v -p codesigning
 
-      # write a .env file with the secrets
-      - name: Write .env file Mac & Linux
-        if: matrix.os != 'windows-latest'
-        run: |
-          echo "LOCAL_RELEASE_TAG=${GITHUB_REF_NAME}" >> .env
-          echo "LOCAL_RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
-
-      - name: Write .env file Windows
-        if: matrix.os == 'windows-latest'
+      - name: Write .env file for Windows CUDA
+        if: matrix.target == 'windows-cuda'
         run: |
           @"
+          WHISPER_EXEC_BACKEND=cuda
+          WHISPER_COMPUTE_TYPE=float32
           LOCAL_RELEASE_TAG=$env:GITHUB_REF_NAME
           LOCAL_RELEASE_DATE=$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')
           "@ | Out-File -FilePath .env -Encoding ASCII
         shell: pwsh
+
+      - name: Write .env file for other platforms
+        if: matrix.target != 'windows-cuda'
+        run: |
+          echo "WHISPER_EXEC_BACKEND=auto" >> .env
+          echo "WHISPER_COMPUTE_TYPE=float16" >> .env
+          echo "LOCAL_RELEASE_TAG=${GITHUB_REF_NAME}" >> .env
+          echo "LOCAL_RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
 
       - name: Build with PyInstaller (MacOS)
         if: startsWith(matrix.os, 'macos')

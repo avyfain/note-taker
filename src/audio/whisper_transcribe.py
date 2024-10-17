@@ -6,7 +6,10 @@ import multiprocessing as mp
 from textual import log
 from dotenv import load_dotenv
 import os
-import multiprocessing.popen_spawn_win32 as forking
+if os.name == 'nt':
+    import multiprocessing.popen_spawn_win32 as forking
+else:
+    import multiprocessing.popen_fork as forking
 import sys
 
 from utils import resource_path
@@ -112,7 +115,7 @@ class ContinuousTranscriberProcess:
         result_queue: mp.Queue,
         stop_event,
     ):
-        log.info("Starting transcription process...")
+        log.info(f"Starting transcription process... backend: {os.environ['WHISPER_EXEC_BACKEND']}, compute_type: {os.environ['WHISPER_COMPUTE_TYPE']}")
 
         load_dotenv(resource_path.resource_path(".env"))
 
@@ -139,7 +142,9 @@ class ContinuousTranscriberProcess:
                 time.sleep(0.25)
                 continue
 
+            log.info(f"Transcribing {len(current_audio)} samples at {time.strftime('%Y-%m-%d %H:%M:%S')}")
             segments, _ = model.transcribe(current_audio, language="en", beam_size=5)
+            log.info(f"Transcribed.")
 
             is_partial = True
 
@@ -152,6 +157,10 @@ class ContinuousTranscriberProcess:
             for segment in segments:
                 text += segment.text + " "
 
+            log.info(f"Transcription: {text}. adding to queue. partial: {is_partial}")
             result_queue.put_nowait((text, is_partial))
 
+            log.info(f"Transcription added to queue. Sleeping.")
             time.sleep(0.25)
+
+        log.info("Transcription process stopped.")

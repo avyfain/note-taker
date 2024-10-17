@@ -9,7 +9,7 @@ import os
 
 if __name__ == "__main__":
     # On Windows calling this function is necessary.
-    multiprocessing.freeze_support()
+    # multiprocessing.freeze_support()
 
     print("Starting Note Taker")
 
