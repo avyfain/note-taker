@@ -1,6 +1,6 @@
 # Local AI Note Taking App
 
-This is a privacy-focused, command-line note-taking app that leverages on-device AI for transcription and text processing. It allows you to transcribe desktop audio and capture microphone input, all while keeping your data secure and private on your local machine.
+This is a privacy-focused, command-line note-taking app that leverages Locaal's on-device AI for transcription and text processing. It allows you to transcribe desktop audio and capture microphone input, all while keeping your data secure and private on your local machine.
 
 ## Key Features
 
