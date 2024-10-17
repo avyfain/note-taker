@@ -6,6 +6,7 @@ import time
 import resampy
 import wave
 from textual import log
+from typing import Callable
 
 
 def print_audio_devices():
@@ -16,8 +17,6 @@ def print_audio_devices():
             f"{i}: {device['name']} (Max channels: In={device['max_input_channels']}, Out={device['max_output_channels']})"
         )
 
-
-from typing import Callable
 
 # Define a callable type with input types and return type
 AudioDataCallback = Callable[[np.ndarray], None]
@@ -203,17 +202,3 @@ class AudioCapture:
 
             except queue.Empty:
                 continue
-
-
-# Global variable to hold the WAV file object
-wav_file = None
-
-
-def example_callback(audio_data):
-    global wav_file
-    if wav_file is not None:
-        # Convert float32 audio data to int16
-        audio_data_int = (audio_data * 32767).astype(np.int16)
-
-        # Write the audio data to the WAV file
-        wav_file.writeframes(audio_data_int.tobytes())

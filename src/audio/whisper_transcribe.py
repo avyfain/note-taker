@@ -128,6 +128,3 @@ class ContinuousTranscriberProcess:
             result_queue.put_nowait((text, is_partial))
 
             time.sleep(0.25)
-
-    def __del__(self):
-        self.stop()
