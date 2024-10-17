@@ -217,36 +217,3 @@ def example_callback(audio_data):
 
         # Write the audio data to the WAV file
         wav_file.writeframes(audio_data_int.tobytes())
-
-
-def main():
-    global wav_file
-    log.info("Available audio devices:")
-    print_audio_devices()
-
-    # Open the WAV file for writing
-    wav_file = wave.open("streaming_recording.wav", "wb")
-    wav_file.setnchannels(1)  # Mono
-    wav_file.setsampwidth(2)  # 2 bytes per sample (16-bit)
-    wav_file.setframerate(16000)  # Sample rate
-
-    audio_capture = AudioCapture(audio_data_callback=example_callback)
-    try:
-        audio_capture.start_recording()
-        log.info("Recording... Press Ctrl+C to stop.")
-        while True:
-            time.sleep(0.1)
-    except KeyboardInterrupt:
-        log.info("Stopping recording...")
-    finally:
-        if hasattr(audio_capture, "stop_recording"):
-            audio_capture.stop_recording()
-
-        # Close the WAV file
-        if wav_file is not None:
-            wav_file.close()
-            log.info("Recording saved to streaming_recording.wav")
-
-
-if __name__ == "__main__":
-    main()

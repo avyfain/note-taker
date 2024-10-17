@@ -27,7 +27,8 @@ note_taker_sources = [
 
 datas = [
     ('src/main.tcss', '.'),
-    ('.env', '.')
+    ('.env', '.'),
+    ('src/stub/audio.py', './faster_whisper/')
 ]
 
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
@@ -44,16 +45,22 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-        'PyQt6',
         'tensorflow',
-        'tkinter',
-        'nltk',
-        'django',
         'torch',
         'torchvision',
         'torchaudio',
+        'transformers',
+        'diffusers',
+        'PyQt6',
+        'tkinter',
+        'nltk',
+        'django',
         'av',
-        'faster_whisper.audio'
+        'faster_whisper.audio',
+        'numpy.tests',
+        'numpy.testing',
+        'numpy.lib.tests',
+        'numpy.doc'
     ],
     noarchive=False,
 )
