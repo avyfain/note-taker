@@ -12,7 +12,7 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
 
     print("Starting Note Taker")
-    
+
     load_dotenv(resource_path.resource_path(".env"))
 
     LanguageModel()  # Warm up the LLM
