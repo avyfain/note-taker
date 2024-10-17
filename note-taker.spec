@@ -52,6 +52,8 @@ a = Analysis(
         'transformers',
         'diffusers',
         'PyQt6',
+        'PySide6',
+        'matplotlib',
         'tkinter',
         'nltk',
         'django',

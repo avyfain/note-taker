@@ -18,14 +18,10 @@ def print_audio_devices():
         )
 
 
-# Define a callable type with input types and return type
-AudioDataCallback = Callable[[np.ndarray], None]
-
-
 class AudioCapture:
     def __init__(
         self,
-        audio_data_callback: AudioDataCallback,
+        audio_data_callback: Callable[[np.ndarray], None],
         target_sample_rate=16000,
         block_duration=0.05,
     ):

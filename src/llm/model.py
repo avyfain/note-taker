@@ -23,9 +23,11 @@ class LanguageModel:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a note-taking assistant. The following note has "
-                    + "user-typed section on top and potentially a transcription. "
-                    + "Summarize the note combining the user notes with the transcription.",
+                    "content": (
+                        "You are a note-taking assistant. The following note has "
+                        "user-typed section on top and potentially a transcription. "
+                        "Summarize the note combining the user notes with the transcription."
+                    ),
                 },
                 {"role": "user", "content": query},
             ],

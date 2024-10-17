@@ -1,12 +1,11 @@
 from queue import Queue
 import time
-from typing import List, Callable
+from typing import List
 import numpy as np
 from textual.widgets import TextArea
 from textual import on, work
 from textual.message import Message
 from textual.worker import get_current_worker
-from rich.text import Text
 import wave
 
 from audio.AudioCapture import AudioCapture
