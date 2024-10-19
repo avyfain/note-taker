@@ -10,6 +10,7 @@ parser.add_argument('--mac_osx', action='store_true')
 parser.add_argument('--win', action='store_true')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--cuda', action='store_true')
+parser.add_argument('--arch', type=str, choices=['x86_64', 'arm64', 'universal2'], help='Mac OSX: Specify the target architecture')
 
 args = parser.parse_args()
 
@@ -107,7 +108,7 @@ elif args.mac_osx:
         console=True,
         disable_windowed_traceback=False,
         argv_emulation=False,
-        target_arch=None,
+        target_arch=args.arch if args.arch is not None else 'universal2',
         codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
         entitlements_file='./entitlements.plist',
     )

@@ -154,10 +154,17 @@ jobs:
           echo "LOCAL_RELEASE_TAG=${GITHUB_REF_NAME}" >> .env
           echo "LOCAL_RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
 
-      - name: Build with PyInstaller (MacOS)
-        if: startsWith(matrix.os, 'macos')
+      - name: Build with PyInstaller (MacOS arm64)
+        if: matrix.target == 'macos-arm64'
         run: |
-          pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx
+          pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx --arch arm64
+        env:
+          APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
+
+      - name: Build with PyInstaller (MacOS x86_64)
+        if: matrix.target == 'macos-x86'
+        run: |
+          pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx --arch x86_64
         env:
           APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
 
