@@ -49,6 +49,12 @@ jobs:
           Remove-Item -Recurse -Force pyinstaller-6.10.0
           Remove-Item -Force pyinstaller-6.10.0.zip
 
+      - name: Install Linux simpler-whisper
+        if: matrix.target == 'linux'
+        run: |
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-linux_x86_64.whl -o simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-linux_x86_64.whl
+          python -m pip install simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-linux_x86_64.whl
+
       - name: Install MacOS llama-cpp-python
         if: startsWith(matrix.os, 'macos')
         run: |
