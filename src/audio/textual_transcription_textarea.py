@@ -1,3 +1,4 @@
+from audio.whisper_transcribe import ContinuousTranscriberProcess
 from queue import Queue
 import time
 from typing import List
@@ -9,7 +10,6 @@ from textual.worker import get_current_worker
 import wave
 
 from audio.AudioCapture import AudioCapture
-from audio.whisper_transcribe import ContinuousTranscriberProcess
 
 
 class TranscriptionTextArea(TextArea):

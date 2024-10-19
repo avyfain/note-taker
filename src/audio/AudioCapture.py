@@ -2,9 +2,7 @@ import sounddevice as sd
 import numpy as np
 import threading
 import queue
-import time
 import resampy
-import wave
 from textual import log
 from typing import Callable
 

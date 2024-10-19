@@ -1,12 +1,11 @@
+from simpler_whisper import whisper
 import time
 import numpy as np
-import faster_whisper
 import threading
 import multiprocessing as mp
-from textual import log
-from dotenv import load_dotenv
 import os
-if os.name == 'nt':
+
+if os.name == "nt":
     import multiprocessing.popen_spawn_win32 as forking
 else:
     import multiprocessing.popen_fork as forking
@@ -37,6 +36,10 @@ class _Popen(forking.Popen):
 
 class Process(mp.Process):
     _Popen = _Popen
+
+
+def my_log_callback(level, message):
+    pass
 
 
 class ContinuousTranscriberProcess:
@@ -88,11 +91,29 @@ class ContinuousTranscriberProcess:
     def stop(self):
         self.stop_event.set()
         if self.transcription_process:
-            self.transcription_process.join()
+            self.transcription_process.join(timeout=5)
+            if self.transcription_process.is_alive():
+                self.transcription_process.terminate()
             self.transcription_process = None
-        self.result_thread.join()
-        self.input_queue.close()
-        self.result_queue.close()
+        if self.result_thread:
+            self.result_thread.join(timeout=5)
+            self.result_thread = None
+        if hasattr(self, "input_queue"):
+            while not self.input_queue.empty():
+                try:
+                    self.input_queue.get_nowait()
+                except:
+                    pass
+            self.input_queue.close()
+            self.input_queue.join_thread()
+        if hasattr(self, "result_queue"):
+            while not self.result_queue.empty():
+                try:
+                    self.result_queue.get_nowait()
+                except:
+                    pass
+            self.result_queue.close()
+            self.result_queue.join_thread()
 
     def is_running(self):
         return (
@@ -115,19 +136,15 @@ class ContinuousTranscriberProcess:
         result_queue: mp.Queue,
         stop_event,
     ):
-        log.info(f"Starting transcription process... backend: {os.environ['WHISPER_EXEC_BACKEND']}, compute_type: {os.environ['WHISPER_COMPUTE_TYPE']}")
+        whisper.set_log_callback(my_log_callback)
 
-        load_dotenv(resource_path.resource_path(".env"))
-
-        model = faster_whisper.WhisperModel(
-            "small.en",
-            device=os.environ["WHISPER_EXEC_BACKEND"],
-            compute_type=os.environ["WHISPER_COMPUTE_TYPE"],
+        model = whisper.load_model(
+            resource_path.resource_path("data/ggml-small.en-q5_1.bin"),
+            True,
         )
 
         current_audio = np.array([])
 
-        log.info("Model loaded. Transcription process started.")
         while not stop_event.is_set():
             any_audio_to_process = False
 
@@ -142,9 +159,7 @@ class ContinuousTranscriberProcess:
                 time.sleep(0.25)
                 continue
 
-            log.info(f"Transcribing {len(current_audio)} samples at {time.strftime('%Y-%m-%d %H:%M:%S')}")
-            segments, _ = model.transcribe(current_audio, language="en", beam_size=5)
-            log.info(f"Transcribed.")
+            text = model.transcribe(current_audio)
 
             is_partial = True
 
@@ -152,15 +167,6 @@ class ContinuousTranscriberProcess:
                 current_audio = np.array([])
                 is_partial = False  # final transcription
 
-            # concatenate segments and call the callback
-            text = ""
-            for segment in segments:
-                text += segment.text + " "
-
-            log.info(f"Transcription: {text}. adding to queue. partial: {is_partial}")
             result_queue.put_nowait((text, is_partial))
 
-            log.info(f"Transcription added to queue. Sleeping.")
             time.sleep(0.25)
-
-        log.info("Transcription process stopped.")

@@ -28,19 +28,20 @@ note_taker_sources = [
 datas = [
     ('src/main.tcss', '.'),
     ('.env', '.'),
-    ('src/stub/audio.py', './faster_whisper/')
+    ('data/ggml-small.en-q5_1.bin', 'data/')
 ]
 
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
 llama_cpp_datas, llama_cpp_binaries, llama_cpp_hiddenimports = collect_all('llama_cpp')
+whisper_datas, whisper_binaries, whisper_hiddenimports = collect_all('simpler-whisper')
 ws_hiddenimports=['websockets', 'websockets.legacy']
 
 a = Analysis(
     note_taker_sources,
     pathex=[],
-    binaries=numpy_binaries + llama_cpp_binaries,
-    datas=datas + numpy_datas + llama_cpp_datas,
-    hiddenimports=numpy_hiddenimports + ws_hiddenimports + llama_cpp_hiddenimports,
+    binaries=numpy_binaries + llama_cpp_binaries + whisper_binaries,
+    datas=datas + numpy_datas + llama_cpp_datas + whisper_datas,
+    hiddenimports=numpy_hiddenimports + ws_hiddenimports + llama_cpp_hiddenimports + whisper_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -58,7 +59,6 @@ a = Analysis(
         'nltk',
         'django',
         'av',
-        'faster_whisper.audio',
         'numpy.tests',
         'numpy.testing',
         'numpy.lib.tests',

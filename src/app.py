@@ -1,3 +1,4 @@
+from audio.textual_transcription_textarea import TranscriptionTextArea
 import datetime
 from typing import Optional
 
@@ -14,7 +15,6 @@ from textual.binding import Binding
 
 from llm.model import LanguageModel
 from notes.manager import NoteManager
-from audio.textual_transcription_textarea import TranscriptionTextArea
 
 
 class NotePanel(Static):

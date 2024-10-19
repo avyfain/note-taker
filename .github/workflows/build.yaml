@@ -54,20 +54,49 @@ jobs:
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
 
-      - name: Install Windows CUDA llama-cpp-python
+      - name: Install MacOS arm64 simpler-whisper
+        if: matrix.target == 'macos-arm64'
+        run: |
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl -o simpler_whisper-0.1.0-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl
+          python -m pip install simpler_whisper-0.1.0-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl
+
+      - name: Install MacOS x86_64 simpler-whisper
+        if: matrix.target == 'macos-x86'
+        run: |
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl -o simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl
+          python -m pip install simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl
+
+      - name: Install Windows CPU dependencies
         if: matrix.target == 'windows-cpu'
         run: |
           $env:CMAKE_ARGS = "-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"
           pip install llama-cpp-python
 
-      - name: Install Windows CUDA llama-cpp-python
+          Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-win64-win_amd64.whl -OutFile simpler_whisper-0.1.0-cp311-cp311-cpu-win64-win_amd64.whl
+          python -m pip install simpler_whisper-0.1.0-cp311-cp311-cpu-win64-win_amd64.whl
+
+      - name: Install Windows CUDA dependencies
         if: matrix.target == 'windows-cuda'
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+          
+          # install simpler-whisper from https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cuda-win64-win_amd64.whl
+          Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cuda-win64-win_amd64.whl -OutFile simpler_whisper-0.1.0-cp311-cp311-cuda-win64-win_amd64.whl
+          python -m pip install simpler_whisper-0.1.0-cp311-cp311-cuda-win64-win_amd64.whl
 
       - name: Install dependencies
         run: |
           python -m pip install -r requirements.txt
+
+      - name: Download Whisper Model Windows
+        if: startsWith(matrix.target, 'windows')
+        run: |
+          Invoke-WebRequest -Uri https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -OutFile data/ggml-small.en-q5_1.bin
+
+      - name: Download Whisper Model MacOS and Linux
+        if: startsWith(matrix.os, 'macos') || matrix.os == 'ubuntu-latest'
+        run: |
+          curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -o data/ggml-small.en-q5_1.bin
 
       - name: Import Apple Certificate
         if: startsWith(matrix.os, 'macos')
