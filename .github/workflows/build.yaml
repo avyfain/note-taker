@@ -96,11 +96,13 @@ jobs:
       - name: Download Whisper Model Windows
         if: startsWith(matrix.target, 'windows')
         run: |
+          mkdir data
           Invoke-WebRequest -Uri https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -OutFile data/ggml-small.en-q5_1.bin
 
       - name: Download Whisper Model MacOS and Linux
         if: startsWith(matrix.os, 'macos') || matrix.os == 'ubuntu-latest'
         run: |
+          mkdir -p data
           curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -o data/ggml-small.en-q5_1.bin
 
       - name: Import Apple Certificate
