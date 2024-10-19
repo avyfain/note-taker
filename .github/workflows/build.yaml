@@ -33,11 +33,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python Non-Mac
+        if: startsWith(matrix.os, 'windows') || matrix.os == 'ubuntu-latest'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
+      - name: Set up Python Mac arm64
+        if: matrix.target == 'macos-arm64'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: 'arm64'
+
+      - name: Set up Python Mac x86
+        if: matrix.target == 'macos-x86'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: 'x64'
+          
       - name: Install pyinstaller for Windows
         if: startsWith(matrix.os, 'windows')
         run: |
@@ -154,20 +169,17 @@ jobs:
           echo "LOCAL_RELEASE_TAG=${GITHUB_REF_NAME}" >> .env
           echo "LOCAL_RELEASE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
 
-      - name: Build with PyInstaller (MacOS arm64)
-        if: matrix.target == 'macos-arm64'
+      - name: Build with PyInstaller (MacOS)
+        if: startsWith(matrix.target, 'macos-')
         run: |
-          pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx --arch arm64
+          ARCH=$(echo ${{ matrix.target }} | sed 's/macos-//')
+          if [ "$ARCH" = "x86" ]; then
+            ARCH="x86_64"
+          fi
+          pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx --arch $ARCH
         env:
           APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
-
-      - name: Build with PyInstaller (MacOS x86_64)
-        if: matrix.target == 'macos-x86'
-        run: |
-          pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx --arch x86_64
-        env:
-          APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
-
+        
       - name: Build with PyInstaller (Windows CPU)
         if: matrix.target == 'windows-cpu'
         run: |
