@@ -63,13 +63,13 @@ jobs:
       - name: Install MacOS arm64 simpler-whisper
         if: matrix.target == 'macos-arm64'
         run: |
-          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-macosx_14_0_universal2.whl -o simpler_whisper-0.1.0-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl -o simpler_whisper-0.1.0-cp311-cp311-macosx_14_0_universal2.whl
           python -m pip install simpler_whisper-0.1.0-cp311-cp311-macosx_14_0_universal2.whl
 
       - name: Install MacOS x86_64 simpler-whisper
         if: matrix.target == 'macos-x86'
         run: |
-          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-macosx_14_0_universal2.whl -o simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl -o simpler_whisper-0.1.0-cp311-cp311-macosx_14_0_universal2.whl
           python -m pip install simpler_whisper-0.1.0-cp311-cp311-macosx_14_0_universal2.whl
 
       - name: Install Windows CPU dependencies
