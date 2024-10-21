@@ -1,3 +1,4 @@
+from os import path
 from audio.whisper_transcribe import ContinuousTranscriberProcess
 from queue import Queue
 import time
@@ -8,6 +9,7 @@ from textual import on, work
 from textual.message import Message
 from textual.worker import get_current_worker
 import wave
+import platformdirs
 
 from audio.AudioCapture import AudioCapture
 
@@ -75,7 +77,10 @@ class TranscriptionTextArea(TextArea):
     @work(thread=True)
     def start_transcription(self):
         self.app.notify("Starting transcription.")
-        self.wav_file = wave.open("streaming_recording.wav", "wb")
+        wavs_directory = platformdirs.user_data_dir("audio", "NoteTakingApp")
+        self.wav_file = wave.open(
+            path.join(wavs_directory, "streaming_recording.wav"), "wb"
+        )
         self.wav_file.setnchannels(1)
         self.wav_file.setsampwidth(2)
         self.wav_file.setframerate(16000)

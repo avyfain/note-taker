@@ -73,25 +73,40 @@ This project uses PyInstaller to create standalone executables for Windows, macO
 
 ### Windows
 
-1. Install dependencies:
-   ```
+1. Install `simpler-whisper` (https://github.com/locaal-ai/simpler-whisper) prebuilt wheel and `llama-cpp-python`
+
+    ```powershell
+    Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cuda-win64-win_amd64.whl -OutFile simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
+    pip install simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
+    rm simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
+    pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+    ```
+
+1. Install other dependencies:
+   ```powershell
    pip install -r requirements.txt
    ```
 
-2. For CPU version:
-   ```
+1. Download the whisper model:
+
+    ```powershell
+    mkdir data
+    Invoke-WebRequest -Uri https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -OutFile data/ggml-small.en-q5_1.bin
+    ```
+
+1. For CPU version:
+   ```powershell
    pyinstaller --clean --noconfirm note-taker.spec -- --win
    ```
 
    For CUDA version:
-   ```
-   pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
+   ```powershell
    pyinstaller --clean --noconfirm note-taker.spec -- --win --cuda
    ```
 
-3. The executable will be in the `dist` folder.
+1. The executable will be in the `dist` folder.
 
-4. To create an installer:
+1. To create an installer:
    - Ensure Inno Setup is installed
    - Run: `iscc note-taker.iss`
 
@@ -99,18 +114,24 @@ This project uses PyInstaller to create standalone executables for Windows, macO
 
 1. Install dependencies:
    ```
-   pip install -r requirements.txt
    pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
+   pip install -r requirements.txt
    ```
 
-2. Build the app:
+1. Download the model:
+
+   ```bash
+   wget -P data/ "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true" -O data/ggml-small.en-q5_1.bin
+   ```
+
+1. Build the app:
    ```
    pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx
    ```
 
-3. The app bundle will be in the `dist` folder.
+1. The app bundle will be in the `dist` folder.
 
-4. To create a DMG:
+1. To create a DMG:
    ```
    hdiutil create -volname "note-taker" -srcfolder dist/note-taker.app -ov -format UDRO note-taker-macos.dmg
    ```
@@ -122,14 +143,20 @@ This project uses PyInstaller to create standalone executables for Windows, macO
    pip install -r requirements.txt
    ```
 
-2. Build the app:
+1. Download the model:
+
+   ```bash
+   wget -P data/ "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true" -O data/ggml-small.en-q5_1.bin
+   ```
+
+1. Build the app:
    ```
    pyinstaller --clean --noconfirm note-taker.spec
    ```
 
-3. The executable will be in the `dist` folder.
+1. The executable will be in the `dist` folder.
 
-4. To create a tarball:
+1. To create a tarball:
    ```
    tar -cvf note-taker.tar -C dist note-taker
    ```
@@ -180,6 +207,7 @@ src
 |
 \---utils
         helpers.py
+        resource_path.py
 ```
 
 ## Key Dependencies
