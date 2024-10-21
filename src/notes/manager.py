@@ -12,18 +12,28 @@ class NoteManager:
             cls._instance = super(NoteManager, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, notes_directory=None):
+    def __init__(self):
         if hasattr(self, "_initialized") and self._initialized:
             return
-        if notes_directory is None:
-            notes_directory = platformdirs.user_data_dir("notes", "NoteTakingApp")
-        if not os.path.exists(notes_directory):
-            os.makedirs(notes_directory)
-        self.notes_directory = notes_directory
+        self.notes_directory = None
+        self.get_notes_directory()
         self.json_file = os.path.join(self.notes_directory, "notes.json")
         self.selected_note: dict | None = None
         self._initialized = True
         self._load_json_store()
+
+    def get_notes_directory(self):
+        """
+        Retrieves the directory path where notes are stored. If the directory does not exist, it is created.
+
+        Returns:
+            str: The path to the notes directory.
+        """
+        if self.notes_directory is None:
+            self.notes_directory = platformdirs.user_data_dir("notes", "NoteTakingApp")
+        if not os.path.exists(self.notes_directory):
+            os.makedirs(self.notes_directory)
+        return self.notes_directory
 
     def _load_json_store(self):
         if os.path.exists(self.json_file):

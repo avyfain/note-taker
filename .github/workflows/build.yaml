@@ -90,8 +90,8 @@ jobs:
       - name: Install Windows CPU dependencies
         if: matrix.target == 'windows-cpu'
         run: |
-          $env:CMAKE_ARGS = "-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS"
-          pip install llama-cpp-python
+          Invoke-WebRequest -Uri https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.1/llama_cpp_python-0.3.1-cp311-cp311-win_amd64.whl -OutFile llama_cpp_python-0.3.1-cp311-cp311-win_amd64.whl
+          python -m pip install llama_cpp_python-0.3.1-cp311-cp311-win_amd64.whl
 
           Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cpu-win64-win_amd64.whl -OutFile simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
           python -m pip install simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
@@ -100,7 +100,7 @@ jobs:
         if: matrix.target == 'windows-cuda'
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
-          
+
           Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/0.1.0/simpler_whisper-0.1.0-cp311-cp311-cuda-win64-win_amd64.whl -OutFile simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
           python -m pip install simpler_whisper-0.1.0-cp311-cp311-win_amd64.whl
 
@@ -179,7 +179,7 @@ jobs:
           pyinstaller --clean --noconfirm note-taker.spec -- --mac_osx --arch $ARCH
         env:
           APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
-        
+
       - name: Build with PyInstaller (Windows CPU)
         if: matrix.target == 'windows-cpu'
         run: |

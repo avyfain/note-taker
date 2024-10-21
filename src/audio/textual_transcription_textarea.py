@@ -12,6 +12,7 @@ import wave
 import platformdirs
 
 from audio.AudioCapture import AudioCapture
+from notes.manager import NoteManager
 
 
 class TranscriptionTextArea(TextArea):
@@ -26,6 +27,7 @@ class TranscriptionTextArea(TextArea):
         self.audio_capture = None
         self.read_only = True
         self.text = "Transcription will appear here."
+        self.note_manager = NoteManager()
         self.start_transcription()
 
     def on_unmount(self):
@@ -77,9 +79,11 @@ class TranscriptionTextArea(TextArea):
     @work(thread=True)
     def start_transcription(self):
         self.app.notify("Starting transcription.")
-        wavs_directory = platformdirs.user_data_dir("audio", "NoteTakingApp")
         self.wav_file = wave.open(
-            path.join(wavs_directory, "streaming_recording.wav"), "wb"
+            path.join(
+                self.note_manager.get_notes_directory(), "streaming_recording.wav"
+            ),
+            "wb",
         )
         self.wav_file.setnchannels(1)
         self.wav_file.setsampwidth(2)
