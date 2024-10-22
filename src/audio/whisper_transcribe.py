@@ -127,7 +127,8 @@ class ContinuousTranscriberProcess:
                 result = self.result_queue.get()
                 transcription, is_partial = result
                 self.callback(transcription, is_partial)
-            time.sleep(0.25)
+            else:
+                time.sleep(0.25)
 
     def _transcribe_loop(
         input_queue: mp.Queue,
