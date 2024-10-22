@@ -7,8 +7,8 @@ import os
 
 
 if __name__ == "__main__":
-    if os.name == 'posix':
-        multiprocessing.set_start_method('fork')
+    if os.name == "posix":
+        multiprocessing.set_start_method("fork")
 
     # On Windows calling this function is necessary.
     multiprocessing.freeze_support()
