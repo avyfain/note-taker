@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: macos-14
-          #   target: macos-x86
+          - os: macos-14-large
+            target: macos-x86
           - os: macos-latest
             target: macos-arm64
           - os: ubuntu-latest
@@ -119,6 +119,14 @@ jobs:
         run: |
           mkdir -p data
           curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -o data/ggml-small.en-q5_1.bin
+
+      - name: Download MacOS CoreML Model
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          mkdir -p data
+          curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-encoder.mlmodelc.zip?download=true -o data/ggml-small.en-encoder.mlmodelc.zip
+          unzip data/ggml-small.en-encoder.mlmodelc.zip -d data
+          rm data/ggml-small.en-encoder.mlmodelc.zip
 
       - name: Import Apple Certificate
         if: startsWith(matrix.os, 'macos')

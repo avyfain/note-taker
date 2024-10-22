@@ -32,6 +32,15 @@ datas = [
     ('data/ggml-small.en-q5_1.bin', 'data/')
 ]
 
+if args.mac_osx:
+    datas += [
+        ('data/ggml-small.en-encoder.mlmodelc/weights/weight.bin', 'data/ggml-small.en-encoder.mlmodelc/weights/'),
+        ('data/ggml-small.en-encoder.mlmodelc/metadata.json', 'data/ggml-small.en-encoder.mlmodelc/'),
+        ('data/ggml-small.en-encoder.mlmodelc/model.mil', 'data/ggml-small.en-encoder.mlmodelc/'),
+        ('data/ggml-small.en-encoder.mlmodelc/coremldata.bin', 'data/ggml-small.en-encoder.mlmodelc/'),
+        ('data/ggml-small.en-encoder.mlmodelc/analytics/coremldata.bin', 'data/ggml-small.en-encoder.mlmodelc/analytics/'),
+    ]
+
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
 llama_cpp_datas, llama_cpp_binaries, llama_cpp_hiddenimports = collect_all('llama_cpp')
 whisper_datas, whisper_binaries, whisper_hiddenimports = collect_all('simpler-whisper')

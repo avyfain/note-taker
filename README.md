@@ -118,10 +118,14 @@ This project uses PyInstaller to create standalone executables for Windows, macO
    pip install -r requirements.txt
    ```
 
-1. Download the model:
+1. Download the models:
 
    ```bash
+   mkdir -p data/
    wget -P data/ "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true" -O data/ggml-small.en-q5_1.bin
+   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-encoder.mlmodelc.zip?download=true -o data/ggml-small.en-encoder.mlmodelc.zip
+   unzip data/ggml-small.en-encoder.mlmodelc.zip -d data
+   rm data/ggml-small.en-encoder.mlmodelc.zip
    ```
 
 1. Build the app:
