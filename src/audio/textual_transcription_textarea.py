@@ -1,5 +1,4 @@
 from os import path
-from audio.whisper_transcribe import ContinuousTranscriberProcess
 from queue import Queue
 import time
 from typing import List
@@ -9,10 +8,12 @@ from textual import on, work
 from textual.message import Message
 from textual.worker import get_current_worker
 import wave
-import platformdirs
 
 from audio.AudioCapture import AudioCapture
 from notes.manager import NoteManager
+from simpler_whisper import whisper
+
+from utils import resource_path
 
 
 class TranscriptionTextArea(TextArea):
@@ -42,8 +43,8 @@ class TranscriptionTextArea(TextArea):
 
         return content
 
-    def process_transcription(self, transcription: str, is_partial: bool):
-        if not transcription or len(transcription.strip()) == 0:
+    def process_transcription(self, chunk_id: int, transcription: str, is_partial: bool):
+        if not transcription or len(transcription) == 0:
             return
         if is_partial:
             self.partial_transcription = transcription
@@ -60,7 +61,7 @@ class TranscriptionTextArea(TextArea):
         return updated
 
     def send_audio_to_transcriber(self, audio_data: np.ndarray):
-        self.transcriber.process(audio_data)
+        self.transcriber.queue_audio(audio_data)
         if self.wav_file is not None:
             audio_data_int = (audio_data * 32767).astype(np.int16)
             self.wav_file.writeframes(audio_data_int.tobytes())
@@ -89,10 +90,14 @@ class TranscriptionTextArea(TextArea):
         self.wav_file.setsampwidth(2)
         self.wav_file.setframerate(16000)
 
-        self.transcriber = ContinuousTranscriberProcess(self.process_transcription)
+        self.transcriber = whisper.ThreadedWhisperModel(
+            resource_path.resource_path("data/ggml-small.en-q5_1.bin"),
+            use_gpu=True,
+            max_duration_sec=10,
+        )
         self.audio_capture = AudioCapture(self.send_audio_to_transcriber)
 
-        self.transcriber.start()
+        self.transcriber.start(self.process_transcription)
         self.audio_capture.start_recording()
         self.is_transcribing = True
 
