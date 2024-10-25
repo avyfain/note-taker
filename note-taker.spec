@@ -19,7 +19,7 @@ note_taker_sources = [
     'src/main.py',
     'src/audio/AudioCapture.py',
     'src/audio/textual_transcription_textarea.py',
-    'src/audio/whisper_transcribe.py',
+    'src/audio/Transcriber.py',
     'src/llm/model.py',
     'src/notes/manager.py',
     'src/utils/helpers.py',
