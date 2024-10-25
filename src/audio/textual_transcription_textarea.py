@@ -14,9 +14,11 @@ from audio.AudioCapture import AudioCapture
 from notes.manager import NoteManager
 from simpler_whisper.whisper import set_log_callback, LogLevel
 
+
 def my_log_callback(level, message):
     # prevent debug messages from being printed
     pass
+
 
 class TranscriptionTextArea(TextArea):
     def __init__(self, *args, **kwargs):
