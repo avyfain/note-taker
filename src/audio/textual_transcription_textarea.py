@@ -12,7 +12,11 @@ import wave
 from audio.Transcriber import Transcriber
 from audio.AudioCapture import AudioCapture
 from notes.manager import NoteManager
+from simpler_whisper.whisper import set_log_callback, LogLevel
 
+def my_log_callback(level, message):
+    # prevent debug messages from being printed
+    pass
 
 class TranscriptionTextArea(TextArea):
     def __init__(self, *args, **kwargs):
@@ -22,6 +26,7 @@ class TranscriptionTextArea(TextArea):
         self.update_queue = Queue()
         self.is_transcribing = False
         self.wav_file = None
+        set_log_callback(my_log_callback)
         self.transcriber = Transcriber()
         self.audio_capture = None
         self.read_only = True
