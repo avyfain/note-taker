@@ -53,7 +53,6 @@ class NoteListView(ListView):
             )
 
 
-
 class DeleteScreen(ModalScreen):
     def compose(self) -> ComposeResult:
         yield Grid(
@@ -77,7 +76,7 @@ class RichNoteTakingScreen(Screen):
         ("n", "new_note", "New"),
         ("l", "live_note", "New Live"),
         ("d", "delete_note", "Delete"),
-        ("ctrl-.", "settings", "Settings"),
+        ("s", "settings", "Settings"),
     ]
     CSS_PATH = "main.tcss"
 
@@ -108,8 +107,9 @@ class RichNoteTakingScreen(Screen):
         self.app.pop_screen()
         self.app.push_screen(RichNoteTakingScreen())
 
+    @work
     async def action_settings(self):
-        await self.app.push_screen(SettingsScreen())
+        await self.app.push_screen_wait(SettingsScreen())
         self.app.pop_screen()
         self.app.push_screen(RichNoteTakingScreen())
 

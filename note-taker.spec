@@ -17,6 +17,8 @@ args = parser.parse_args()
 note_taker_sources = [
     'src/app.py',
     'src/main.py',
+    'src/settings_screen.py',
+    'src/notes_editor_components.py',
     'src/audio/AudioCapture.py',
     'src/audio/textual_transcription_textarea.py',
     'src/audio/Transcriber.py',
@@ -24,6 +26,8 @@ note_taker_sources = [
     'src/notes/manager.py',
     'src/utils/helpers.py',
     'src/utils/resource_path.py'
+    'src/utils/defaults.py'
+    'src/utils/storage.py'
 ]
 
 datas = [

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from app import RichNoteTakingApp
 from audio.Transcriber import Transcriber
+from app import RichNoteTakingApp
 from llm.model import LanguageModel
 from utils import resource_path
 

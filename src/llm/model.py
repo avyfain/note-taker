@@ -1,5 +1,7 @@
 from llama_cpp import Llama, llama_log_set
 import ctypes
+from utils.storage import fetch_data
+from utils.defaults import default_prompt, default_model, default_model_file
 
 
 def my_log_callback(level, message, user_data):
@@ -16,13 +18,13 @@ class LanguageModel:
 
     def __init__(self):
         if not hasattr(self, "llm"):
-            log_callback = ctypes.CFUNCTYPE(
-                None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p
-            )(my_log_callback)
-            llama_log_set(log_callback, ctypes.c_void_p())
+            # log_callback = ctypes.CFUNCTYPE(
+            #     None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p
+            # )(my_log_callback)
+            # llama_log_set(log_callback, ctypes.c_void_p())
             self.llm = Llama.from_pretrained(
-                repo_id="bartowski/Llama-3.2-1B-Instruct-GGUF",
-                filename="Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+                repo_id=fetch_data("settings.json", "model", default_model),
+                filename=fetch_data("settings.json", "model_file", default_model_file),
                 verbose=True,
                 n_ctx=8192,
             )
@@ -32,11 +34,7 @@ class LanguageModel:
             messages=[
                 {
                     "role": "system",
-                    "content": (
-                        "You are a note-taking assistant. The following note has "
-                        "user-typed section on top and potentially a transcription. "
-                        "Summarize the note combining the user notes with the transcription."
-                    ),
+                    "content": fetch_data("settings.json", "prompt", default_prompt),
                 },
                 {"role": "user", "content": query},
             ],

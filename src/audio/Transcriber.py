@@ -1,7 +1,7 @@
 import threading
 from simpler_whisper.whisper import ThreadedWhisperModel, set_log_callback
 from utils import resource_path
-import os
+import platform
 
 
 def my_log_callback(level, message):
@@ -23,7 +23,7 @@ class Transcriber:
 
     def _initialize(self):
         model_path = resource_path.resource_path("data/ggml-small.en-q5_1.bin")
-        use_gpu = not (os.uname().sysname == "Darwin")
+        use_gpu = not (platform.system() == "Darwin")
         self.model = ThreadedWhisperModel(
             model_path=model_path,
             callback=self.handle_result,
