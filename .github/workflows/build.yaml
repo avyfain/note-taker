@@ -72,6 +72,8 @@ jobs:
         run: |
           curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ simpler-whisper-version }}/simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-cpu-x86_64-linux_x86_64.whl -o simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-linux_x86_64.whl
           python -m pip install simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-linux_x86_64.whl
+        env:
+          simpler-whisper-version: ${{ env.simpler-whisper-version }}
 
       - name: Install MacOS llama-cpp-python
         if: startsWith(matrix.os, 'macos')
@@ -83,12 +85,16 @@ jobs:
         run: |
           curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ simpler-whisper-version }}/simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl -o simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
           python -m pip install simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
+        env:
+          simpler-whisper-version: ${{ env.simpler-whisper-version }}
 
       - name: Install MacOS x86_64 simpler-whisper
         if: matrix.target == 'macos-x86'
         run: |
           curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ simpler-whisper-version }}/simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl -o simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
           python -m pip install simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
+        env:
+          simpler-whisper-version: ${{ env.simpler-whisper-version }}
 
       - name: Install Windows CPU dependencies
         if: matrix.target == 'windows-cpu'
@@ -98,6 +104,8 @@ jobs:
 
           Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/${{ simpler-whisper-version }}/simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-cpu-win64-win_amd64.whl -OutFile simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-win_amd64.whl
           python -m pip install simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-win_amd64.whl
+        env:
+          simpler-whisper-version: ${{ env.simpler-whisper-version }}
 
       - name: Install Windows CUDA dependencies
         if: matrix.target == 'windows-cuda'
@@ -106,6 +114,8 @@ jobs:
 
           Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/${{ simpler-whisper-version }}/simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-cuda-win64-win_amd64.whl -OutFile simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-win_amd64.whl
           python -m pip install simpler_whisper-${{ simpler-whisper-version }}-cp311-cp311-win_amd64.whl
+        env:
+          simpler-whisper-version: ${{ env.simpler-whisper-version }}
 
       - name: Install dependencies
         run: |
