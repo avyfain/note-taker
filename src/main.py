@@ -1,10 +1,8 @@
-import multiprocessing
 from dotenv import load_dotenv
 from app import RichNoteTakingApp
 from audio.Transcriber import Transcriber
 from llm.model import LanguageModel
 from utils import resource_path
-import os
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 import threading
-from simpler_whisper.whisper import ThreadedWhisperModel, set_log_callback, LogLevel
+from simpler_whisper.whisper import ThreadedWhisperModel, set_log_callback
 from utils import resource_path
 import os
 

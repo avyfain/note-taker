@@ -1,4 +1,9 @@
-from llama_cpp import Llama
+from llama_cpp import Llama, llama_log_set
+import ctypes
+
+
+def my_log_callback(level, message, user_data):
+    pass
 
 
 class LanguageModel:
@@ -11,6 +16,10 @@ class LanguageModel:
 
     def __init__(self):
         if not hasattr(self, "llm"):
+            log_callback = ctypes.CFUNCTYPE(
+                None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p
+            )(my_log_callback)
+            llama_log_set(log_callback, ctypes.c_void_p())
             self.llm = Llama.from_pretrained(
                 repo_id="bartowski/Llama-3.2-1B-Instruct-GGUF",
                 filename="Llama-3.2-1B-Instruct-Q4_K_M.gguf",
