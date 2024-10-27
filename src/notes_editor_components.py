@@ -73,6 +73,8 @@ class NoteEditScreen(Screen):
         for response in LanguageModel().generate_response(note_content):
             self.log.info(response)
             textArea.text += response
+            # update the text area
+            textArea.update()
 
 
 class LiveNoteEditScreen(Screen):
