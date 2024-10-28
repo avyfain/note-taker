@@ -24,9 +24,9 @@ note_taker_sources = [
     'src/audio/Transcriber.py',
     'src/llm/model.py',
     'src/notes/manager.py',
+    'src/utils/defaults.py',
     'src/utils/helpers.py',
-    'src/utils/resource_path.py'
-    'src/utils/defaults.py'
+    'src/utils/resource_path.py',
     'src/utils/storage.py'
 ]
 
@@ -47,7 +47,7 @@ if args.mac_osx:
 
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
 llama_cpp_datas, llama_cpp_binaries, llama_cpp_hiddenimports = collect_all('llama_cpp')
-whisper_datas, whisper_binaries, whisper_hiddenimports = collect_all('simpler-whisper')
+whisper_datas, whisper_binaries, whisper_hiddenimports = collect_all('simpler_whisper')
 ws_hiddenimports=['websockets', 'websockets.legacy']
 
 a = Analysis(
