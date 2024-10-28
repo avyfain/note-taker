@@ -42,13 +42,13 @@ def store_data(file_path, document_name, data):
 
     documents[document_name] = data
 
+    with open(file_path, "w") as f:
+        json.dump(documents, f, indent=2)
+
     # notify subscribers
     if file_path in data_subscribers and document_name in data_subscribers[file_path]:
         for callback in data_subscribers[file_path][document_name]:
             callback(data)
-
-    with open(file_path, "w") as f:
-        json.dump(documents, f, indent=2)
 
 
 def remove_data(file_path, document_name):

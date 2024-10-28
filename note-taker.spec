@@ -127,18 +127,18 @@ elif args.mac_osx:
         codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
         entitlements_file='./entitlements.plist',
     )
-    app = BUNDLE(
-        exe,
-        name='note-taker.app',
-        bundle_identifier='ai.locaal.note-taker',
-        version='0.0.1',
-        info_plist={
-            'NSPrincipalClass': 'NSApplication',
-            'NSAppleScriptEnabled': False,
-            'NSCameraUsageDescription': 'Getting images from the camera to perform OCR',
-            'NSMicrophoneUsageDescription': 'Record the microphone for speech recognition',
-        }
-    )
+#    app = BUNDLE(
+#        exe,
+#        name='note-taker.app',
+#        bundle_identifier='ai.locaal.note-taker',
+#        version='0.0.1',
+#        info_plist={
+#            'NSPrincipalClass': 'NSApplication',
+#            'NSAppleScriptEnabled': False,
+#            'NSCameraUsageDescription': 'Getting images from the camera to perform OCR',
+#            'NSMicrophoneUsageDescription': 'Record the microphone for speech recognition',
+#        }
+#    )
 else:
     exe = EXE(
         pyz,

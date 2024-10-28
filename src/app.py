@@ -1,3 +1,6 @@
+import os
+import platform
+import subprocess
 from typing import Optional
 
 from rich.panel import Panel
@@ -9,6 +12,7 @@ from textual.widgets import Static, ListView, ListItem
 from textual.containers import Grid
 from textual.widgets import Header, Static, Footer, Button, Label
 from textual.screen import Screen, ModalScreen
+from textual.binding import Binding
 
 from notes.manager import NoteManager
 from notes_editor_components import NoteEditScreen, LiveNoteEditScreen
@@ -16,10 +20,11 @@ from settings_screen import SettingsScreen
 
 
 class NotePanel(Static):
-    def __init__(self, title: str, content: str, *args, **kwargs):
+    def __init__(self, title: str, content: str, note_id: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title = title
         self.content = content
+        self.note_id = note_id
 
     def render(self):
         return Panel(
@@ -38,17 +43,18 @@ class NoteListView(ListView):
         self.node_select_callback = node_select_callback
 
     def on_list_view_selected(self, selected: ListView.Selected):
-        self.note_manager.select_note_by_index(selected.list_view.index)
+        self.note_manager.select_note_by_uuid(selected.item.children[0].note_id)
         self.node_select_callback()
 
     def compose(self):
-        notes = self.note_manager.list_notes()
+        notes = self.note_manager.list_notes(True)
         for note in notes:
             content = self.note_manager.read_note(note["uuid"])
             yield ListItem(
                 NotePanel(
                     note["title"],
                     (content[:50] + "..." if len(content) > 50 else content),
+                    note["uuid"],
                 )
             )
 
@@ -77,6 +83,8 @@ class RichNoteTakingScreen(Screen):
         ("l", "live_note", "New Live"),
         ("d", "delete_note", "Delete"),
         ("s", "settings", "Settings"),
+        Binding("ctrl+g", "github", "GitHub", show=True, priority=True),
+        Binding("ctrl+f", "folder", "Notes Folder", show=True, priority=True),
     ]
     CSS_PATH = "main.tcss"
 
@@ -113,6 +121,27 @@ class RichNoteTakingScreen(Screen):
         self.app.pop_screen()
         self.app.push_screen(RichNoteTakingScreen())
 
+    def action_github(self):
+        # use the system open command to open the browser
+        url = "https://github.com/locaal-ai/note-taker?tab=readme-ov-file#local-ai-note-taking-app"
+        import webbrowser
+
+        webbrowser.open(url)
+
+    def action_folder(self):
+        path = self.note_manager.get_notes_directory()
+        system = platform.system().lower()
+
+        if system == "windows":
+            # Windows
+            os.startfile(path)
+        elif system == "darwin":
+            # macOS
+            subprocess.Popen(["open", path])
+        else:
+            # Linux/Unix
+            subprocess.Popen(["xdg-open", path])
+
     def action_quit(self):
         self.app.exit()
 
@@ -120,8 +149,9 @@ class RichNoteTakingScreen(Screen):
         def check_delete(delete: bool | None) -> None:
             """Called when the delete screen is dismissed"""
             if delete:
-                highlighted_note_index = self.query_one("#note_list").index
-                self.note_manager.delete_note_by_index(highlighted_note_index)
+                highlighted_item = self.query_one("#note_list").highlighted_child
+                note_id = highlighted_item.children[0].note_id
+                self.note_manager.delete_note(note_id)
                 self.app.pop_screen()
                 self.app.push_screen(RichNoteTakingScreen())
 

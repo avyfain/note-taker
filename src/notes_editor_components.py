@@ -5,6 +5,7 @@ from textual.widgets import Static, Footer, TextArea
 from textual.screen import Screen
 from textual.binding import Binding
 from textual import work
+from textual.reactive import reactive
 
 from llm.model import LanguageModel
 from notes.manager import NoteManager
@@ -37,6 +38,8 @@ class NoteEditScreen(Screen):
         ("escape", "quit", "Quit"),
         Binding("ctrl+l", "run_llm", "Run LLM", show=True, priority=True),
     ]
+
+    content = reactive("")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,8 +76,6 @@ class NoteEditScreen(Screen):
         for response in LanguageModel().generate_response(note_content):
             self.log.info(response)
             textArea.text += response
-            # update the text area
-            textArea.update()
 
 
 class LiveNoteEditScreen(Screen):
@@ -93,7 +94,7 @@ class LiveNoteEditScreen(Screen):
 
     def compose(self):
         yield Static(f"Title: {self.title}")
-        yield TranscriptionTextArea(id="Transcription")
+        yield TranscriptionTextArea(id="Transcription", uuid=self.uuid)
         text_area = NoteTextArea(self.uuid, self.content, id="note_text")
         text_area.focus()
         yield text_area

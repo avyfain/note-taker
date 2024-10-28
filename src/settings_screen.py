@@ -1,7 +1,8 @@
 from textual.containers import Grid, Vertical
-from textual.widgets import Select, TextArea, Button, Label, Header, Footer
+from textual.widgets import Select, TextArea, Button, Label, Header, Footer, Input
 from textual.screen import ModalScreen
 from textual.message import Message
+from notes.manager import default_storage_folder
 from utils.storage import store_data, fetch_data
 from utils.defaults import default_prompt, default_model
 from huggingface_hub import list_repo_files
@@ -48,6 +49,9 @@ class SettingsScreen(ModalScreen):
         super().__init__()
         self.current_prompt = fetch_data("settings.json", "prompt", default_prompt)
         self.current_model = fetch_data("settings.json", "model", default_model)
+        self.storage_folder = fetch_data(
+            "settings.json", "storage_folder", default_storage_folder
+        )
 
     def compose(self):
         yield Header("Settings")
@@ -77,6 +81,11 @@ class SettingsScreen(ModalScreen):
                     value=self.current_model,
                     classes="settings-select",
                 ),
+                Label(
+                    "Storage Folder:",
+                    classes="settings-storage-folder",
+                ),
+                Input(self.storage_folder, id="storage-folder-input"),
                 id="settings-container",
             ),
             id="settings-dialog",
@@ -95,6 +104,11 @@ class SettingsScreen(ModalScreen):
         if changed.text_area.id == "prompt-input":
             self.current_prompt = changed.text_area.text
             store_data("settings.json", "prompt", self.current_prompt)
+
+    def on_input_changed(self, changed: Input.Changed):
+        if changed.input.id == "storage-folder-input":
+            self.storage_folder = changed.value
+            store_data("settings.json", "storage_folder", self.storage_folder)
 
     def action_exit(self):
         self.notify("Settings updated.")

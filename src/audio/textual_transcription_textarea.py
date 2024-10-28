@@ -15,13 +15,14 @@ from notes.manager import NoteManager
 
 
 class TranscriptionTextArea(TextArea):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, uuid: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.transcriptions: List[str] = []
         self.partial_transcription = ""
         self.update_queue = Queue()
         self.is_transcribing = False
         self.wav_file = None
+        self.uuid = uuid
         self.transcriber = Transcriber()
         self.audio_capture = None
         self.read_only = True
@@ -74,6 +75,8 @@ class TranscriptionTextArea(TextArea):
     @on(Update)
     def update_ui(self, update: Update):
         self.text = update.transcription
+        # write the transcription to the note
+        self.note_manager.update_note_transcription(self.uuid, self.text)
         # set the cursor to the last line
         self.cursor_location = (len(self.text.split("\n")) + 1, 0)
 

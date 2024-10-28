@@ -217,7 +217,7 @@ jobs:
       - name: Zip Application for Notarization
         if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
         run: |
-          ditto -c -k --keepParent dist/note-taker.app note-taker.zip
+          ditto -c -k --keepParent dist/note-taker note-taker.zip
 
       - name: Notarize and Staple
         if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
@@ -226,13 +226,13 @@ jobs:
             "${{ secrets.APPLE_DEVELOPER_ID_USER }}" --password \
             "${{ secrets.APPLE_DEVELOPER_ID_PASSWORD }}" --team-id \
             "${{ secrets.APPLE_DEVELOPER_ID_TEAM }}" --wait --verbose
-          chmod 755 dist/note-taker.app
-          xcrun stapler staple dist/note-taker.app
+          chmod 755 dist/note-taker
+          xcrun stapler staple dist/note-taker
 
       - name: Verify Notarization
         if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
         run: |
-          spctl -a -v dist/note-taker.app
+          spctl -a -v dist/note-taker
           rm note-taker.zip
 
       - name: Add version to .iss file
@@ -259,8 +259,8 @@ jobs:
       - name: Create dmg MacOS
         if: startsWith(matrix.os, 'macos')
         run: |
-          chmod a+x dist/note-taker.app
-          hdiutil create -volname "note-taker" -srcfolder dist/note-taker.app -ov -format UDRO note-taker-${{ matrix.target }}.dmg
+          chmod a+x dist/note-taker
+          hdiutil create -volname "note-taker" -srcfolder dist/note-taker -ov -format UDRO note-taker-${{ matrix.target }}.dmg
 
       - name: Create zip on Windows
         if: matrix.os == 'windows-latest'
