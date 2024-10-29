@@ -141,5 +141,12 @@ class NoteManager:
     def list_notes(self, sort_by_date=False):
         notes_list = list(self.notes.values())
         if sort_by_date:
-            notes_list.sort(key=lambda x: x["updated_at"], reverse=True)
+            notes_list.sort(
+                key=lambda x: (
+                    x["updated_at"]
+                    if "updated_at" in x
+                    else x["created_at"] if "created_at" in x else 0
+                ),
+                reverse=True,
+            )
         return notes_list
