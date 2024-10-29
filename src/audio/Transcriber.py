@@ -1,7 +1,12 @@
 import threading
-from simpler_whisper.whisper import ThreadedWhisperModel, set_log_callback
+from simpler_whisper.whisper import (
+    ThreadedWhisperModel,
+    set_log_callback,
+    WhisperSegment,
+)
 from utils import resource_path
 import platform
+from typing import Callable, List
 
 
 def my_log_callback(level, message):
@@ -33,11 +38,13 @@ class Transcriber:
         set_log_callback(my_log_callback)
         self.callback = None
 
-    def handle_result(self, chunk_id: int, text: str, is_partial: bool):
+    def handle_result(
+        self, chunk_id: int, text: List[WhisperSegment], is_partial: bool
+    ):
         if self.callback:
             self.callback(chunk_id, text, is_partial)
 
-    def start(self, callback=None):
+    def start(self, callback: Callable[[int, List[WhisperSegment], bool], None] = None):
         if callback:
             self.callback = callback
         self.model.start()

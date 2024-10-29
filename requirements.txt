@@ -3,7 +3,7 @@ llama-cpp-python
 platformdirs
 resampy
 textual
-numpy
+numpy==1.26.4
 rich
 simpler-whisper
 huggingface_hub

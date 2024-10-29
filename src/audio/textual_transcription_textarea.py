@@ -13,6 +13,8 @@ from audio.Transcriber import Transcriber
 from audio.AudioCapture import AudioCapture
 from notes.manager import NoteManager
 
+from simpler_whisper.whisper import WhisperSegment
+
 
 class TranscriptionTextArea(TextArea):
     def __init__(self, uuid: str, *args, **kwargs):
@@ -43,15 +45,16 @@ class TranscriptionTextArea(TextArea):
         return content
 
     def process_transcription(
-        self, chunk_id: int, transcription: str, is_partial: bool
+        self, chunk_id: int, transcription: List[WhisperSegment], is_partial: bool
     ):
         if not transcription or len(transcription) == 0:
             return
+        transcription_str = " ".join([segment.text for segment in transcription])
         if is_partial:
-            self.partial_transcription = transcription
+            self.partial_transcription = transcription_str
         else:
-            self.transcriptions.append(transcription)
             self.partial_transcription = ""
+            self.transcriptions.append(transcription_str)
         self.update_queue.put(True)  # Signal that an update is available
 
     def update_transcriptions(self):
