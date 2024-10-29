@@ -1,35 +1,54 @@
-## TLDR
-- Topics covered
-- Decisions made
-- Open questions
-- Action items agreed upon
+# Meeting Summary
 
-## Topic 1
-- Sub-bullet
-- Sub-bullet
-- Sub-bullet
+**Date:**  
+**Attendees:**  
+**Facilitator:**  
+**Meeting Purpose/Goal:**  
 
-## Topic 2
-- Sub-bullet
-- Sub-bullet
-- Sub-bullet
+---
 
-## Topic 3
-- Sub-bullet
-- Sub-bullet
-- Sub-bullet
+### Summary Highlights
+- **Discussion Topics:** [Summarize main discussion points or key insights.]
+- **Decisions:** [Summarize the key decisions made.]
+- **Action Items:** [Summarize main actions and responsibilities.]
 
-## Decisions
-- Decision 1
-- Decision 2
-- Decision 3
+---
 
-## Open Questions
-- Question 1
-- Question 2
+### 1. Agenda Overview
+**Primary Topics Discussed:**
+- [List each main topic covered during the meeting.]
 
-## Next steps
-- Action 1 owned by Name A
-- Action 2 owner by Name B
-- Action 3 owned by Name C
+---
+
+### 2. Discussion Highlights
+**Key Points by Topic:**
+- **Topic 1:** [Summarize main points or insights discussed.]
+- **Topic 2:** [Summarize main points or insights discussed.]
+- **...Continue for each topic on the agenda...]
+
+---
+
+### 3. Decisions Made
+**Summary of Key Decisions:**
+- **Decision 1:** [Describe the decision made and any relevant context.]
+- **Decision 2:** [Describe the decision made and any relevant context.]
+- **...Continue for each decision made during the meeting...]
+
+---
+
+### 4. Action Items
+**Assigned Tasks and Responsibilities:**
+- **Action Item 1:** [Describe the task, assignee, and deadline.]
+- **Action Item 2:** [Describe the task, assignee, and deadline.]
+- **...Continue for each action item identified during the meeting...]
+
+---
+
+### 5. Next Steps and Follow-Up
+**Follow-Up Items for the Next Meeting:**
+- [List any items or issues that need to be revisited or reviewed in the next meeting.]
+
+**Date of Next Meeting:** [Date or timeframe]
+
+---
 
