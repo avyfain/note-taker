@@ -19,6 +19,7 @@ note_taker_sources = [
     'src/main.py',
     'src/settings_screen.py',
     'src/notes_editor_components.py',
+    'src/template_select_modal.py',
     'src/audio/AudioCapture.py',
     'src/audio/textual_transcription_textarea.py',
     'src/audio/Transcriber.py',
@@ -33,7 +34,12 @@ note_taker_sources = [
 datas = [
     ('src/main.tcss', '.'),
     ('.env', '.'),
-    ('data/ggml-small.en-q5_1.bin', 'data/')
+    ('data/ggml-small.en-q5_1.bin', 'data/'),
+    ('data/templates/1-1.md', 'data/templates/'),
+    ('data/templates/default.md', 'data/templates/'),
+    ('data/templates/discovery-meeting.md', 'data/templates/'),
+    ('data/templates/retrospectives.md', 'data/templates/'),
+    ('data/templates/standup.md', 'data/templates/')
 ]
 
 if args.mac_osx:

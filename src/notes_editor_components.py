@@ -11,6 +11,7 @@ from llm.model import LanguageModel
 from notes.manager import NoteManager
 
 from audio.textual_transcription_textarea import TranscriptionTextArea
+from template_select_modal import TemplateSelectModal
 
 
 class NoteTextArea(TextArea):
@@ -69,13 +70,22 @@ class NoteEditScreen(Screen):
 
     @work
     async def action_run_llm(self):
-        self.app.notify("Running LLM")
-        textArea = self.query_one("#note_text")
-        note_content = textArea.text
-        textArea.text += f"\n\n# Response\n\n"
-        for response in LanguageModel().generate_response(note_content):
-            self.log.info(response)
-            textArea.text += response
+        template_modal = TemplateSelectModal()
+        result = await self.app.push_screen_wait(template_modal)
+        # read the template content
+
+        if result and result[0]:
+            self.app.notify("Running LLM")
+            textArea = self.query_one("#note_text")
+            note_content = textArea.text
+            textArea.text += f"\n\n# Response\n\n"
+            for response in LanguageModel().generate_response(
+                note_content, template=result[1]
+            ):
+                self.log.info(response)
+                textArea.text += response
+        else:
+            self.app.notify("Cancelled LLM")
 
 
 class LiveNoteEditScreen(Screen):

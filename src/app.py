@@ -17,6 +17,7 @@ from textual.binding import Binding
 from notes.manager import NoteManager
 from notes_editor_components import NoteEditScreen, LiveNoteEditScreen
 from settings_screen import SettingsScreen
+from utils.helpers import open_folder_with_finder
 
 
 class NotePanel(Static):
@@ -130,17 +131,7 @@ class RichNoteTakingScreen(Screen):
 
     def action_folder(self):
         path = self.note_manager.get_notes_directory()
-        system = platform.system().lower()
-
-        if system == "windows":
-            # Windows
-            os.startfile(path)
-        elif system == "darwin":
-            # macOS
-            subprocess.Popen(["open", path])
-        else:
-            # Linux/Unix
-            subprocess.Popen(["xdg-open", path])
+        open_folder_with_finder(path)
 
     def action_quit(self):
         self.app.exit()

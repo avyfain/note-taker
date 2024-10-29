@@ -2,10 +2,11 @@ from llama_cpp import Llama, llama_log_set
 import ctypes
 from utils.storage import fetch_data, subscribe_to_data
 from utils.defaults import (
-    default_prompt,
+    default_system_prompt,
     default_model,
     default_model_file,
     default_context_size,
+    default_query_template,
 )
 
 
@@ -43,15 +44,30 @@ class LanguageModel:
             n_ctx=self.context_size,
         )
 
-    def generate_response(self, query):
+    def generate_response(
+        self,
+        note_text: str,
+        transcription: str | None = None,
+        template: str | None = None,
+    ):
+        query = default_query_template.format(
+            user_notes=note_text,
+            transcription=transcription or "",
+            template=template or "",
+        )
         # make sure query fits in context size
         query = query[: self.context_size - 2]
+        # write to a file for debugging
+        with open("query.txt", "w") as f:
+            f.write(query)
 
         for chunk in self.llm.create_chat_completion(
             messages=[
                 {
                     "role": "system",
-                    "content": fetch_data("settings.json", "prompt", default_prompt),
+                    "content": fetch_data(
+                        "settings.json", "prompt", default_system_prompt
+                    ),
                 },
                 {"role": "user", "content": query},
             ],

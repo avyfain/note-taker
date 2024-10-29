@@ -2,9 +2,11 @@ from textual.containers import Grid, Vertical
 from textual.widgets import Select, TextArea, Button, Label, Header, Footer, Input
 from textual.screen import ModalScreen
 from textual.message import Message
+from textual.binding import Binding
 from notes.manager import default_storage_folder
-from utils.storage import store_data, fetch_data
-from utils.defaults import default_prompt, default_model
+from utils.helpers import open_folder_with_finder
+from utils.storage import get_data_dir, store_data, fetch_data
+from utils.defaults import default_system_prompt, default_model
 from huggingface_hub import list_repo_files
 import re
 
@@ -43,11 +45,16 @@ def find_q4_model_file(repo_id):
 class SettingsScreen(ModalScreen):
     """A modal screen for managing the settings."""
 
-    BINDINGS = [("escape", "exit", "Exit")]
+    BINDINGS = [
+        ("escape", "exit", "Exit"),
+        Binding("ctrl+f", "folder", "Open Settings Folder", show=True, priority=True),
+    ]
 
     def __init__(self):
         super().__init__()
-        self.current_prompt = fetch_data("settings.json", "prompt", default_prompt)
+        self.current_prompt = fetch_data(
+            "settings.json", "prompt", default_system_prompt
+        )
         self.current_model = fetch_data("settings.json", "model", default_model)
         self.storage_folder = fetch_data(
             "settings.json", "storage_folder", default_storage_folder
@@ -113,3 +120,7 @@ class SettingsScreen(ModalScreen):
     def action_exit(self):
         self.notify("Settings updated.")
         self.dismiss(False)
+
+    def action_folder(self):
+        path = get_data_dir()
+        open_folder_with_finder(path)
