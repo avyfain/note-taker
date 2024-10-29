@@ -114,7 +114,9 @@ jobs:
       - name: Download Whisper Model Windows
         if: startsWith(matrix.target, 'windows')
         run: |
-          mkdir data
+          if (-Not (Test-Path -Path data)) {
+            mkdir data
+          }
           Invoke-WebRequest -Uri https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -OutFile data/ggml-small.en-q5_1.bin
 
       - name: Download Whisper Model MacOS and Linux
