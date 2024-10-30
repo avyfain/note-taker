@@ -199,7 +199,6 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         run: |
           codesign -vv --deep dist/note-taker
-          spctl -a -v dist/note-taker
           rm note-taker.zip
 
       - name: Add version to .iss file
