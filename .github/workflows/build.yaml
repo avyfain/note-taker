@@ -187,7 +187,7 @@ jobs:
         run: |
           ditto -c -k --keepParent dist/note-taker note-taker.zip
 
-      - name: Notarize and Staple
+      - name: Notarize
         if: startsWith(matrix.os, 'macos')
         run: |
           xcrun notarytool submit note-taker.zip --apple-id \
@@ -195,18 +195,10 @@ jobs:
             "${{ secrets.APPLE_DEVELOPER_ID_PASSWORD }}" --team-id \
             "${{ secrets.APPLE_DEVELOPER_ID_TEAM }}" --wait --verbose
 
-            # Unzip the notarized app
-            rm -rf dist/note-taker
-            unzip note-taker.zip
-            chmod 755 dist/note-taker
-
-            # Staple the notarization
-            xcrun stapler staple dist/note-taker
-
-      - name: Verify Notarization
+      - name: Verify Code Signing
         if: startsWith(matrix.os, 'macos')
         run: |
-          xcrun stapler validate dist/note-taker
+          codesign -vv --deep dist/note-taker
           spctl -a -v dist/note-taker
           rm note-taker.zip
 
