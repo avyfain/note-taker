@@ -194,9 +194,14 @@ jobs:
             "${{ secrets.APPLE_DEVELOPER_ID_USER }}" --password \
             "${{ secrets.APPLE_DEVELOPER_ID_PASSWORD }}" --team-id \
             "${{ secrets.APPLE_DEVELOPER_ID_TEAM }}" --wait --verbose
-          chmod 755 dist/note-taker
-          xcrun stapler validate dist/note-taker || true  # Check if already stapled
-          xcrun stapler staple dist/note-taker
+
+            # Unzip the notarized app
+            rm -rf dist/note-taker
+            unzip note-taker.zip -d dist/
+            chmod 755 dist/note-taker
+
+            # Staple the notarization
+            xcrun stapler staple dist/note-taker
 
       - name: Verify Notarization
         if: startsWith(matrix.os, 'macos')
