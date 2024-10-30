@@ -1,4 +1,5 @@
 import datetime
+import pyperclip
 
 from textual.widgets import Static
 from textual.widgets import Static, Footer, TextArea
@@ -38,6 +39,7 @@ class NoteEditScreen(Screen):
     BINDINGS = [
         ("escape", "quit", "Quit"),
         Binding("ctrl+l", "run_llm", "Run LLM", show=True, priority=True),
+        Binding("ctrl+o", "clipboard", "Copy to Clipboard", show=True, priority=True),
     ]
 
     content = reactive("")
@@ -78,7 +80,7 @@ class NoteEditScreen(Screen):
             self.app.notify("Running LLM")
             textArea = self.query_one("#note_text")
             note_content = textArea.text
-            textArea.text += f"\n\n# Response\n\n"
+            textArea.text += f"\n\n# AI Summary\n\n"
             for response in LanguageModel().generate_response(
                 note_content, template=result[1]
             ):
@@ -86,6 +88,14 @@ class NoteEditScreen(Screen):
                 textArea.text += response
         else:
             self.app.notify("Cancelled LLM")
+
+    def action_clipboard(self):
+        textArea = self.query_one("#note_text")
+        text = textArea.text
+        # add "watermark" to the copied text
+        text += "\n\n---\n\nMade by 🤖 with https://locaal.ai"
+        pyperclip.copy(text)
+        self.app.notify("Text copied to clipboard")
 
 
 class LiveNoteEditScreen(Screen):

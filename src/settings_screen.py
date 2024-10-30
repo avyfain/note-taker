@@ -1,3 +1,4 @@
+import json
 from textual.containers import Grid, Vertical
 from textual.widgets import Select, TextArea, Button, Label, Header, Footer, Input
 from textual.screen import ModalScreen
@@ -7,8 +8,24 @@ from notes.manager import default_storage_folder
 from utils.helpers import open_folder_with_finder
 from utils.storage import get_data_dir, store_data, fetch_data
 from utils.defaults import default_system_prompt, default_model
+from utils.resource_path import resource_path
 from huggingface_hub import list_repo_files
 import re
+
+
+# Load models from the JSON file
+def load_transcription_models():
+    with open(resource_path("data/models_directory.json"), "r") as file:
+        models = json.load(file)["models"]
+    # keep models which don't have a "extra" field
+    models = [model for model in models if "extra" not in model]
+    # keep models that are transcription type
+    models = [model for model in models if model["type"] == "MODEL_TYPE_TRANSCRIPTION"]
+    # sort models by friendly name
+    models = sorted(models, key=lambda x: x["friendly_name"])
+    # turn into Select options format (tuple of model name)
+    models = [(model["friendly_name"], model["local_folder_name"]) for model in models]
+    return models
 
 
 def find_q4_model_file(repo_id):
@@ -56,6 +73,9 @@ class SettingsScreen(ModalScreen):
             "settings.json", "prompt", default_system_prompt
         )
         self.current_model = fetch_data("settings.json", "model", default_model)
+        self.current_whisper_model = fetch_data(
+            "settings.json", "whisper_model", "ggml-model-whisper-small-en-q5_1"
+        )
         self.storage_folder = fetch_data(
             "settings.json", "storage_folder", default_storage_folder
         )
@@ -71,7 +91,7 @@ class SettingsScreen(ModalScreen):
                     text=self.current_prompt,
                     classes="settings-prompt",
                 ),
-                Label("Model:"),
+                Label("LLM Model:"),
                 Select(
                     [
                         (model, model)
@@ -87,6 +107,14 @@ class SettingsScreen(ModalScreen):
                     id="model-select",
                     value=self.current_model,
                     classes="settings-select",
+                ),
+                Label("Transcription Model:"),
+                Select(
+                    load_transcription_models(),
+                    id="whisper-model-select",
+                    value=self.current_whisper_model,
+                    classes="settings-select",
+                    name="whisper-model",
                 ),
                 Label(
                     "Storage Folder:",
@@ -106,6 +134,10 @@ class SettingsScreen(ModalScreen):
             model_file = find_q4_model_file(self.current_model)
             store_data("settings.json", "model_file", model_file)
             self.notify("Model updated.")
+        elif changed.select.id == "whisper-model-select":
+            self.current_whisper_model = changed.select.value
+            store_data("settings.json", "whisper_model", self.current_whisper_model)
+            self.notify("Whisper model updated.")
 
     def on_text_area_changed(self, changed: TextArea.Changed):
         if changed.text_area.id == "prompt-input":
