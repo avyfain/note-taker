@@ -197,7 +197,7 @@ jobs:
 
             # Unzip the notarized app
             rm -rf dist/note-taker
-            unzip note-taker.zip -d dist/
+            unzip note-taker.zip
             chmod 755 dist/note-taker
 
             # Staple the notarization
