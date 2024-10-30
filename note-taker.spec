@@ -9,7 +9,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--mac_osx', action='store_true')
 parser.add_argument('--win', action='store_true')
 parser.add_argument('--debug', action='store_true')
-parser.add_argument('--cuda', action='store_true')
 parser.add_argument('--arch', type=str, choices=['x86_64', 'arm64', 'universal2'], help='Mac OSX: Specify the target architecture')
 
 args = parser.parse_args()
