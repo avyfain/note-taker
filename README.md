@@ -1,20 +1,25 @@
-# Local AI Note Taking App
+# Note Taker - Privacy focused AI note taking app, that runs on-device
 
-This is a privacy-focused, command-line note-taking app that leverages Locaal's on-device AI for transcription and text processing. It allows you to transcribe desktop audio and capture microphone input, all while keeping your data secure and private on your local machine.
+Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SDK for transcription and summarization. Transcribe meetings and generate concise summaries, all locally. Free, open-source, and built for developers. 
 
-## Key Features
+## Features
 
-- **Local AI Processing**: Utilizes on-device AI models for transcription and text analysis, ensuring your data never leaves your computer.
-- **Privacy-First**: All operations are performed locally, guaranteeing complete data privacy and security.
-- **Cost-Effective**: No cloud services or subscriptions required - use advanced AI features for free.
-- **Cross-Platform**: Supports Windows, macOS, and Linux.
-- **Offline Capability**: Fully functional without an internet connection.
+- **Private**: Data stays on your device. No servers or third-party access, ensuring complete privacy.
+- **Real-Time**: Transcribe in 99+ languages.
+- **Smart**: AI-generated summaries with customizable templates.
+- **Portable**: No data lock-in. Your notes are saved as markdown files either locally or on your favorite cloud storage provider.
+- **Works Offline**: No internet connection required.
+- **Non-Intrusive**: Runs in the background. No bots joining your calls.
+- **Customizable**: Choose AI models and summary templates.
+- **Cross-Platform**: Supports Windows, macOS, Linux.
+- **Cost-Effective**: No server or usage fees.
 
 ## How It Works
 
-- **Audio Transcription**: Uses `faster_whisper`, a local implementation of OpenAI's Whisper model, for accurate speech-to-text conversion.
-- **Text Processing**: Integrates `llama-cpp-python`, based on `ggerganiv/llama.cpp`, for advanced local language model capabilities.
-- **Audio Capture**: Employs `sounddevice` for reliable microphone and desktop audio capture.
+- Built leveraging Locaal's on-device AI SDK:
+  - **Transcription**: Uses `faster_whisper`, a local implementation of OpenAI's Whisper model.
+  - **Summarization**: Integrates `llama-cpp-python` for local language model capabilities.
+  - **Audio Capture**: Uses `sounddevice` for microphone and desktop audio capture.
 
 ## Prerequisites
 
