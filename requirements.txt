@@ -9,4 +9,3 @@ simpler-whisper
 huggingface_hub
 pyinstaller==6.10.0
 python-dotenv
-huggingface_hub
