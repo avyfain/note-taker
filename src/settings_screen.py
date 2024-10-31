@@ -7,7 +7,7 @@ from textual.binding import Binding
 from notes.manager import default_storage_folder
 from utils.helpers import open_folder_with_finder
 from utils.storage import get_data_dir, store_data, fetch_data
-from utils.defaults import default_system_prompt, default_model
+from utils.defaults import default_system_prompt, default_model, default_query_template
 from utils.resource_path import resource_path
 from huggingface_hub import list_repo_files
 import re
@@ -79,6 +79,9 @@ class SettingsScreen(ModalScreen):
         self.storage_folder = fetch_data(
             "settings.json", "storage_folder", default_storage_folder
         )
+        self.current_query = fetch_data(
+            "settings.json", "query", default_query_template
+        )
 
     def compose(self):
         yield Header("Settings")
@@ -90,6 +93,12 @@ class SettingsScreen(ModalScreen):
                     id="prompt-input",
                     text=self.current_prompt,
                     classes="settings-prompt",
+                ),
+                Label("Query format:"),
+                TextArea(
+                    id="query-input",
+                    text=self.current_query,
+                    classes="settings-query",
                 ),
                 Label("LLM Model:"),
                 Select(
@@ -143,6 +152,9 @@ class SettingsScreen(ModalScreen):
         if changed.text_area.id == "prompt-input":
             self.current_prompt = changed.text_area.text
             store_data("settings.json", "prompt", self.current_prompt)
+        elif changed.text_area.id == "query-input":
+            self.current_query = changed.text_area.text
+            store_data("settings.json", "query", self.current_query)
 
     def on_input_changed(self, changed: Input.Changed):
         if changed.input.id == "storage-folder-input":

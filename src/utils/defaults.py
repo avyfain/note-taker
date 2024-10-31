@@ -46,17 +46,7 @@ NOTES:
 - Maintain original template formatting only if they can be filled.
 - **Do not include or repeat the original notes or transcription verbatim in the final output.**
 """
-default_query_template = """
-[USER_NOTES]
-{user_notes}
-[END_USER_NOTES]
-[TRANSCRIPTION]
-{transcription}
-[END_TRANSCRIPTION]
-[TEMPLATE]
-{template}
-[END_TEMPLATE]
-"""
+default_query_template = "{user_notes}"
 default_model = "bartowski/Llama-3.2-1B-Instruct-GGUF"
 default_model_file = "Llama-3.2-1B-Instruct-Q4_K_M.gguf"
 default_context_size = 8192

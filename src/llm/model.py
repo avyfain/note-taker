@@ -50,7 +50,8 @@ class LanguageModel:
         transcription: str | None = None,
         template: str | None = None,
     ):
-        query = default_query_template.format(
+        query_template = fetch_data("settings.json", "query", default_query_template)
+        query = query_template.format(
             user_notes=note_text,
             transcription=transcription or "",
             template=template or "",
