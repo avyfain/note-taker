@@ -38,7 +38,8 @@ datas = [
     ('data/templates/default.md', 'data/templates/'),
     ('data/templates/discovery-meeting.md', 'data/templates/'),
     ('data/templates/retrospectives.md', 'data/templates/'),
-    ('data/templates/standup.md', 'data/templates/')
+    ('data/templates/standup.md', 'data/templates/'),
+    ('data/models_directory.json', 'data/')
 ]
 
 if args.mac_osx:
