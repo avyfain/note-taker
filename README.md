@@ -17,9 +17,9 @@ Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SD
 ## How It Works
 
 - Built leveraging Locaal's on-device AI SDK:
-  - **Transcription**: Uses `faster_whisper`, a local implementation of OpenAI's Whisper model.
-  - **Summarization**: Integrates `llama-cpp-python` for local language model capabilities.
-  - **Audio Capture**: Uses `sounddevice` for microphone and desktop audio capture.
+  - **Transcription**: Uses Locaal's [simpler-whisper](https://github.com/locaal-ai/simpler-whisper/), a multi-threaded local implementation of OpenAI's Whisper model.
+  - **Summarization**: Integrates [llama-cpp-python](https://github.com/abetlen/llama-cpp-python) for local language model capabilities.
+  - **Audio Capture**: Uses [sounddevice](https://python-sounddevice.readthedocs.io/) for microphone and desktop audio capture.
 
 ## Prerequisites
 
@@ -28,6 +28,8 @@ Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SD
 
 ## Installation
 
+1. Install a pre-built version from the [Releases](https://github.com/locaal-ai/note-taker/releases) page, including an installer for windows or a simple standalone app for Mac.
+
 1. Clone the repository:
 
    ```bash
@@ -35,7 +37,7 @@ Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SD
    cd note-taker
    ```
 
-2. Install the dependencies:
+1. Install the dependencies:
 
    ```bash
    pip install -r requirements.txt
@@ -198,30 +200,31 @@ Our GitHub Actions workflow (`build.yaml`) automates builds for multiple platfor
 ## Project Structure
 
 ```
-src
-|   app.py
-|   main.py
-|   main.tcss
-|
-+---audio
-|       AudioCapture.py
-|       textual_transcription_textarea.py
-|       whisper_transcribe.py
-|
-+---llm
-|       model.py
-|
-+---notes
-|       manager.py
-|
-\---utils
-        helpers.py
-        resource_path.py
+src/
+├── app.py
+├── audio
+│   ├── AudioCapture.py
+│   ├── Transcriber.py
+│   └── textual_transcription_textarea.py
+├── llm
+│   └── model.py
+├── main.py
+├── main.tcss
+├── notes
+│   └── manager.py
+├── notes_editor_components.py
+├── settings_screen.py
+├── template_select_modal.py
+└── utils
+    ├── defaults.py
+    ├── helpers.py
+    ├── resource_path.py
+    └── storage.py
 ```
 
 ## Key Dependencies
 
-- [`faster-whisper`](https://github.com/SYSTRAN/faster-whisper): Local implementation of Whisper for speech recognition
+- [`simpler-whisper`](https://github.com/locaal-ai/simpler-whisper): Local implementation of Whisper for speech recognition
 - [`llama-cpp-python`](https://github.com/abetlen/llama-cpp-python): Python bindings for the llama.cpp library
 - [`sounddevice`](https://github.com/spatialaudio/python-sounddevice): For audio capture
 - [`textual`](https://github.com/Textualize/textual): TUI (Text User Interface) framework
