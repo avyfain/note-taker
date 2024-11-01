@@ -80,7 +80,8 @@ jobs:
             'linux'
             'macos-x86'
             'macos-arm64'
-            'windows'
+            'windows-cpu'
+            'windows-cuda'
           )
 
           mkdir -p "${{ github.workspace }}/uploads"
@@ -119,7 +120,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          draft: false
           name: Locaal Note Taker v${{ steps.check.outputs.version }}
           generate_release_notes: true
           body_path: ${{ github.workspace }}/CHECKSUMS.txt
