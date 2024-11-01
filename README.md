@@ -2,6 +2,10 @@
 
 Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SDK for transcription and summarization. Transcribe meetings and generate concise summaries, all locally. Free, open-source, and built for developers. 
 
+<div align="center">
+  <a href="https://youtu.be/sxtZpKV0c_c" target="_blank"><img src="https://github.com/user-attachments/assets/cd130cf2-cf3d-44a9-bd7d-964d1d40f80d" width="30%" /></a>
+</div>
+
 ## Features
 
 - **Private**: Data stays on your device. No servers or third-party access, ensuring complete privacy.
