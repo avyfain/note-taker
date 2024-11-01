@@ -18,6 +18,7 @@ class NoteManager:
         if hasattr(self, "_initialized") and self._initialized:
             return
         self.notes_directory = None
+        self.notes = {}
         self.get_notes_directory()
         self.selected_note: dict | None = None
         self._initialized = True
@@ -37,19 +38,31 @@ class NoteManager:
             subscribe_to_data(
                 "settings.json", "storage_folder", self.set_notes_directory
             )
-        if not os.path.exists(self.notes_directory):
-            os.makedirs(self.notes_directory)
+        try:
+            if not os.path.exists(self.notes_directory):
+                os.makedirs(self.notes_directory)
+        except Exception as e:
+            print(f"Error creating notes directory: {e}")
+            return
         self.json_file = os.path.join(self.notes_directory, "notes.json")
         return self.notes_directory
 
     def set_notes_directory(self, new_notes_directory):
         self.notes_directory = new_notes_directory
-        if not os.path.exists(self.notes_directory):
-            os.makedirs(self.notes_directory)
+        try:
+            if not os.path.exists(self.notes_directory):
+                os.makedirs(self.notes_directory)
+        except Exception as e:
+            print(f"Error creating notes directory: {e}")
+            self.notes_directory = None
+            return
         self.json_file = os.path.join(self.notes_directory, "notes.json")
         self._load_json_store()
 
     def _load_json_store(self):
+        if not hasattr(self, "json_file"):
+            print("Notes directory not set")
+            return
         if os.path.exists(self.json_file):
             with open(self.json_file, "r") as f:
                 self.notes = json.load(f)
@@ -57,6 +70,9 @@ class NoteManager:
             self.notes = {}
 
     def _save_json_store(self):
+        if not hasattr(self, "json_file"):
+            print("Notes directory not set")
+            return
         with open(self.json_file, "w") as f:
             json.dump(self.notes, f, indent=2)
 
@@ -74,13 +90,19 @@ class NoteManager:
             raise IndexError("Index out of range")
 
     def get_note_path_from_uuid(self, uuid):
+        if not hasattr(self, "notes_directory"):
+            print("Notes directory not set")
+            return None
         return os.path.join(self.notes_directory, f"{uuid}.txt")
 
     def create_note(self, title, content) -> str:
         note_uuid = str(uuid.uuid4())
         note_path = self.get_note_path_from_uuid(note_uuid)
-        with open(note_path, "w") as file:
-            file.write(content)
+        if note_path:
+            with open(note_path, "w") as file:
+                file.write(content)
+        else:
+            print("Error creating note")
         self.notes[note_uuid] = {
             "uuid": note_uuid,
             "title": title,
@@ -114,6 +136,9 @@ class NoteManager:
         self.notes[uuid]["updated_at"] = os.path.getmtime(note_path)
 
     def update_note_transcription(self, uuid: str, new_transcription: str):
+        if not hasattr(self, "notes_directory") or self.notes_directory is None:
+            print("Notes directory not set")
+            return
         if uuid not in self.notes:
             raise KeyError("Note not found")
         # create a new file with the transcription with "_transcription" appended to the uuid
@@ -125,6 +150,9 @@ class NoteManager:
         self.notes[uuid]["updated_at"] = os.path.getmtime(transcription_path)
 
     def delete_note(self, uuid: str):
+        if not hasattr(self, "notes_directory") or self.notes_directory is None:
+            print("Notes directory not set")
+            return
         if uuid not in self.notes:
             raise KeyError("Note not found")
         note_path = self.notes[uuid]["path"]
