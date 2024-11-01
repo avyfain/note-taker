@@ -1,4 +1,6 @@
 import os
+import platform
+import subprocess
 
 
 def create_directory(directory):
@@ -31,3 +33,20 @@ def delete_file(file_path):
     """
     if os.path.exists(file_path):
         os.remove(file_path)
+
+
+def open_folder_with_finder(path):
+    """
+    Opens the given folder in Finder (macOS specific).
+    """
+    system = platform.system().lower()
+
+    if system == "windows":
+        # Windows
+        os.startfile(path)
+    elif system == "darwin":
+        # macOS
+        subprocess.Popen(["open", path])
+    else:
+        # Linux/Unix
+        subprocess.Popen(["xdg-open", path])

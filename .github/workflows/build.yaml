@@ -31,30 +31,15 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      simpler-whisper-version: 0.2.0
+      simpler-whisper-version: 0.2.2
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python Non-Mac
-        if: startsWith(matrix.os, 'windows') || matrix.os == 'ubuntu-latest'
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Set up Python Mac arm64
-        if: matrix.target == 'macos-arm64'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          architecture: 'arm64'
-
-      - name: Set up Python Mac x86
-        if: matrix.target == 'macos-x86'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          architecture: 'x64'
 
       - name: Install pyinstaller for Windows
         if: startsWith(matrix.os, 'windows')
@@ -70,24 +55,14 @@ jobs:
       - name: Install Linux simpler-whisper
         if: matrix.target == 'linux'
         run: |
-          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-cpu-x86_64-linux_x86_64.whl -o simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-linux_x86_64.whl
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}+cpu-cp311-cp311-linux_x86_64.whl -o simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-linux_x86_64.whl
           python -m pip install simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-linux_x86_64.whl
 
-      - name: Install MacOS llama-cpp-python
+      - name: Install MacOS dependencies
         if: startsWith(matrix.os, 'macos')
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/metal
-
-      - name: Install MacOS arm64 simpler-whisper
-        if: matrix.target == 'macos-arm64'
-        run: |
-          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-cpu-arm64-macosx_14_0_universal2.whl -o simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
-          python -m pip install simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
-
-      - name: Install MacOS x86_64 simpler-whisper
-        if: matrix.target == 'macos-x86'
-        run: |
-          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-cpu-x86_64-macosx_14_0_universal2.whl -o simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
+          curl -L https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}+cpu-cp311-cp311-macosx_14_0_universal2.whl -o simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
           python -m pip install simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-macosx_14_0_universal2.whl
 
       - name: Install Windows CPU dependencies
@@ -96,7 +71,7 @@ jobs:
           Invoke-WebRequest -Uri https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.1/llama_cpp_python-0.3.1-cp311-cp311-win_amd64.whl -OutFile llama_cpp_python-0.3.1-cp311-cp311-win_amd64.whl
           python -m pip install llama_cpp_python-0.3.1-cp311-cp311-win_amd64.whl
 
-          Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-cpu-win64-win_amd64.whl -OutFile simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-win_amd64.whl
+          Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}+cpu-cp311-cp311-win_amd64.whl -OutFile simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-win_amd64.whl
           python -m pip install simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-win_amd64.whl
 
       - name: Install Windows CUDA dependencies
@@ -104,7 +79,7 @@ jobs:
         run: |
           python -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
 
-          Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-cuda-win64-win_amd64.whl -OutFile simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-win_amd64.whl
+          Invoke-WebRequest -Uri https://github.com/locaal-ai/simpler-whisper/releases/download/${{ env.simpler-whisper-version }}/simpler_whisper-${{ env.simpler-whisper-version }}+cuda-cp311-cp311-win_amd64.whl -OutFile simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-win_amd64.whl
           python -m pip install simpler_whisper-${{ env.simpler-whisper-version }}-cp311-cp311-win_amd64.whl
 
       - name: Install dependencies
@@ -114,7 +89,9 @@ jobs:
       - name: Download Whisper Model Windows
         if: startsWith(matrix.target, 'windows')
         run: |
-          mkdir data
+          if (-Not (Test-Path -Path data)) {
+            mkdir data
+          }
           Invoke-WebRequest -Uri https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en-q5_1.bin?download=true -OutFile data/ggml-small.en-q5_1.bin
 
       - name: Download Whisper Model MacOS and Linux
@@ -191,22 +168,13 @@ jobs:
         env:
           APPLE_APP_DEVELOPER_ID: ${{ secrets.APPLE_APP_DEVELOPER_ID }}
 
-      - name: Build with PyInstaller (Windows CPU)
-        if: matrix.target == 'windows-cpu'
+      - name: Build with PyInstaller (Windows)
+        if: startsWith(matrix.target, 'windows-')
         run: |
           if ("${{ github.event_name }}" -eq "pull_request") {
             pyinstaller --clean --noconfirm note-taker.spec -- --win --debug
           } else {
             pyinstaller --clean --noconfirm note-taker.spec -- --win
-          }
-
-      - name: Build with PyInstaller (Windows CUDA)
-        if: matrix.target == 'windows-cuda'
-        run: |
-          if ("${{ github.event_name }}" -eq "pull_request") {
-            pyinstaller --clean --noconfirm note-taker.spec -- --win --cuda --debug
-          } else {
-            pyinstaller --clean --noconfirm note-taker.spec -- --win --cuda
           }
 
       - name: Build with PyInstaller (Linux)
@@ -215,24 +183,22 @@ jobs:
           pyinstaller --clean --noconfirm note-taker.spec
 
       - name: Zip Application for Notarization
-        if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
+        if: startsWith(matrix.os, 'macos')
         run: |
-          ditto -c -k --keepParent dist/note-taker.app note-taker.zip
+          ditto -c -k --keepParent dist/note-taker note-taker.zip
 
-      - name: Notarize and Staple
-        if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
+      - name: Notarize
+        if: startsWith(matrix.os, 'macos')
         run: |
           xcrun notarytool submit note-taker.zip --apple-id \
             "${{ secrets.APPLE_DEVELOPER_ID_USER }}" --password \
             "${{ secrets.APPLE_DEVELOPER_ID_PASSWORD }}" --team-id \
             "${{ secrets.APPLE_DEVELOPER_ID_TEAM }}" --wait --verbose
-          chmod 755 dist/note-taker.app
-          xcrun stapler staple dist/note-taker.app
 
-      - name: Verify Notarization
-        if: startsWith(matrix.os, 'macos') && github.event_name != 'pull_request'
+      - name: Verify Code Signing
+        if: startsWith(matrix.os, 'macos')
         run: |
-          spctl -a -v dist/note-taker.app
+          codesign -vv --deep dist/note-taker
           rm note-taker.zip
 
       - name: Add version to .iss file
@@ -259,8 +225,8 @@ jobs:
       - name: Create dmg MacOS
         if: startsWith(matrix.os, 'macos')
         run: |
-          chmod a+x dist/note-taker.app
-          hdiutil create -volname "note-taker" -srcfolder dist/note-taker.app -ov -format UDRO note-taker-${{ matrix.target }}.dmg
+          chmod a+x dist/note-taker
+          hdiutil create -volname "note-taker" -srcfolder dist/note-taker -ov -format UDRO note-taker-${{ matrix.target }}.dmg
 
       - name: Create zip on Windows
         if: matrix.os == 'windows-latest'

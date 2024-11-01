@@ -9,7 +9,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--mac_osx', action='store_true')
 parser.add_argument('--win', action='store_true')
 parser.add_argument('--debug', action='store_true')
-parser.add_argument('--cuda', action='store_true')
 parser.add_argument('--arch', type=str, choices=['x86_64', 'arm64', 'universal2'], help='Mac OSX: Specify the target architecture')
 
 args = parser.parse_args()
@@ -17,19 +16,30 @@ args = parser.parse_args()
 note_taker_sources = [
     'src/app.py',
     'src/main.py',
+    'src/settings_screen.py',
+    'src/notes_editor_components.py',
+    'src/template_select_modal.py',
     'src/audio/AudioCapture.py',
     'src/audio/textual_transcription_textarea.py',
     'src/audio/Transcriber.py',
     'src/llm/model.py',
     'src/notes/manager.py',
+    'src/utils/defaults.py',
     'src/utils/helpers.py',
-    'src/utils/resource_path.py'
+    'src/utils/resource_path.py',
+    'src/utils/storage.py'
 ]
 
 datas = [
     ('src/main.tcss', '.'),
     ('.env', '.'),
-    ('data/ggml-small.en-q5_1.bin', 'data/')
+    ('data/ggml-small.en-q5_1.bin', 'data/'),
+    ('data/templates/1-1.md', 'data/templates/'),
+    ('data/templates/default.md', 'data/templates/'),
+    ('data/templates/discovery-meeting.md', 'data/templates/'),
+    ('data/templates/retrospectives.md', 'data/templates/'),
+    ('data/templates/standup.md', 'data/templates/'),
+    ('data/models_directory.json', 'data/')
 ]
 
 if args.mac_osx:
@@ -43,7 +53,7 @@ if args.mac_osx:
 
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
 llama_cpp_datas, llama_cpp_binaries, llama_cpp_hiddenimports = collect_all('llama_cpp')
-whisper_datas, whisper_binaries, whisper_hiddenimports = collect_all('simpler-whisper')
+whisper_datas, whisper_binaries, whisper_hiddenimports = collect_all('simpler_whisper')
 ws_hiddenimports=['websockets', 'websockets.legacy']
 
 a = Analysis(
@@ -123,18 +133,18 @@ elif args.mac_osx:
         codesign_identity=os.environ.get('APPLE_APP_DEVELOPER_ID', ''),
         entitlements_file='./entitlements.plist',
     )
-    app = BUNDLE(
-        exe,
-        name='note-taker.app',
-        bundle_identifier='ai.locaal.note-taker',
-        version='0.0.1',
-        info_plist={
-            'NSPrincipalClass': 'NSApplication',
-            'NSAppleScriptEnabled': False,
-            'NSCameraUsageDescription': 'Getting images from the camera to perform OCR',
-            'NSMicrophoneUsageDescription': 'Record the microphone for speech recognition',
-        }
-    )
+#    app = BUNDLE(
+#        exe,
+#        name='note-taker.app',
+#        bundle_identifier='ai.locaal.note-taker',
+#        version='0.0.1',
+#        info_plist={
+#            'NSPrincipalClass': 'NSApplication',
+#            'NSAppleScriptEnabled': False,
+#            'NSCameraUsageDescription': 'Getting images from the camera to perform OCR',
+#            'NSMicrophoneUsageDescription': 'Record the microphone for speech recognition',
+#        }
+#    )
 else:
     exe = EXE(
         pyz,

@@ -13,15 +13,18 @@ from audio.Transcriber import Transcriber
 from audio.AudioCapture import AudioCapture
 from notes.manager import NoteManager
 
+from simpler_whisper.whisper import WhisperSegment
+
 
 class TranscriptionTextArea(TextArea):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, uuid: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.transcriptions: List[str] = []
         self.partial_transcription = ""
         self.update_queue = Queue()
         self.is_transcribing = False
         self.wav_file = None
+        self.uuid = uuid
         self.transcriber = Transcriber()
         self.audio_capture = None
         self.read_only = True
@@ -42,15 +45,16 @@ class TranscriptionTextArea(TextArea):
         return content
 
     def process_transcription(
-        self, chunk_id: int, transcription: str, is_partial: bool
+        self, chunk_id: int, transcription: List[WhisperSegment], is_partial: bool
     ):
         if not transcription or len(transcription) == 0:
             return
+        transcription_str = " ".join([segment.text for segment in transcription])
         if is_partial:
-            self.partial_transcription = transcription
+            self.partial_transcription = transcription_str
         else:
-            self.transcriptions.append(transcription)
             self.partial_transcription = ""
+            self.transcriptions.append(transcription_str)
         self.update_queue.put(True)  # Signal that an update is available
 
     def update_transcriptions(self):
@@ -74,6 +78,8 @@ class TranscriptionTextArea(TextArea):
     @on(Update)
     def update_ui(self, update: Update):
         self.text = update.transcription
+        # write the transcription to the note
+        self.note_manager.update_note_transcription(self.uuid, self.text)
         # set the cursor to the last line
         self.cursor_location = (len(self.text.split("\n")) + 1, 0)
 

@@ -1,4 +1,17 @@
-from llama_cpp import Llama
+from llama_cpp import Llama, llama_log_set
+import ctypes
+from utils.storage import fetch_data, subscribe_to_data
+from utils.defaults import (
+    default_system_prompt,
+    default_model,
+    default_model_file,
+    default_context_size,
+    default_query_template,
+)
+
+
+def my_log_callback(level, message, user_data):
+    pass
 
 
 class LanguageModel:
@@ -11,22 +24,50 @@ class LanguageModel:
 
     def __init__(self):
         if not hasattr(self, "llm"):
-            self.llm = Llama.from_pretrained(
-                repo_id="bartowski/Llama-3.2-1B-Instruct-GGUF",
-                filename="Llama-3.2-1B-Instruct-Q4_K_M.gguf",
-                verbose=True,
-                n_ctx=8192,
-            )
+            # log_callback = ctypes.CFUNCTYPE(
+            #     None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p
+            # )(my_log_callback)
+            # llama_log_set(log_callback, ctypes.c_void_p())
+            self.set_model(None)
+            subscribe_to_data("settings.json", "model", self.set_model)
+            subscribe_to_data("settings.json", "model_file", self.set_model)
+            subscribe_to_data("settings.json", "context_size", self.set_model)
 
-    def generate_response(self, query):
+    def set_model(self, _):
+        self.context_size = fetch_data(
+            "settings.json", "context_size", default_context_size
+        )
+        self.llm = Llama.from_pretrained(
+            repo_id=fetch_data("settings.json", "model", default_model),
+            filename=fetch_data("settings.json", "model_file", default_model_file),
+            verbose=False,
+            n_ctx=self.context_size,
+        )
+
+    def generate_response(
+        self,
+        note_text: str,
+        transcription: str | None = None,
+        template: str | None = None,
+    ):
+        query_template = fetch_data("settings.json", "query", default_query_template)
+        query = query_template.format(
+            user_notes=note_text,
+            transcription=transcription or "",
+            template=template or "",
+        )
+        # make sure query fits in context size
+        query = query[: self.context_size - 2]
+        # write to a file for debugging
+        with open("query.txt", "w") as f:
+            f.write(query)
+
         for chunk in self.llm.create_chat_completion(
             messages=[
                 {
                     "role": "system",
-                    "content": (
-                        "You are a note-taking assistant. The following note has "
-                        "user-typed section on top and potentially a transcription. "
-                        "Summarize the note combining the user notes with the transcription."
+                    "content": fetch_data(
+                        "settings.json", "prompt", default_system_prompt
                     ),
                 },
                 {"role": "user", "content": query},
