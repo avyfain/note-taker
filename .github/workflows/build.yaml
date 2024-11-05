@@ -1,4 +1,4 @@
-name: Cross-Platform Build with PyInstaller
+name: Build
 
 on:
   pull_request:

@@ -1,5 +1,11 @@
 # Note Taker - Privacy focused AI note taking app, that runs on-device
 
+<div align="center">
+
+[![Build Status](https://github.com/locaal-ai/note-taker/actions/workflows/build.yaml/badge.svg)](https://github.com/locaal-ai/note-taker/actions)
+
+</div>
+
 Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SDK for transcription and summarization. Transcribe meetings and generate concise summaries, all locally. Free, open-source, and built for developers. 
 
 <div align="center">
