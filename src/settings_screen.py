@@ -106,11 +106,15 @@ class SettingsScreen(ModalScreen):
                         (model, model)
                         for model in [
                             "bartowski/Llama-3.2-1B-Instruct-GGUF",
+                            "bartowski/SmolLM2-1.7B-Instruct-GGUF",
+                            "bartowski/Phi-3.5-mini-instruct-GGUF",
                             "MaziyarPanahi/Llama-3.2-1B-Instruct-GGUF",
+                            "MaziyarPanahi/Qwen2-1.5B-Instruct-GGUF",
                             "unsloth/Llama-3.2-1B-Instruct-GGUF",
                             "lmstudio-community/Llama-3.2-1B-Instruct-GGUF",
-                            "MaziyarPanahi/SmolLM-1.7B-Instruct-v0.2-GGUF",
-                            "bartowski/Phi-3.5-mini-instruct_Uncensored-GGUF",
+                            "lmstudio-community/Qwen2.5-1.5B-Instruct-GGUF",
+                            "lmstudio-community/SmolLM2-360M-Instruct-GGUF",
+                            "HuggingFaceTB/SmolLM2-1.7B-Instruct-GGUF",
                         ]
                     ],
                     id="model-select",
@@ -139,9 +143,12 @@ class SettingsScreen(ModalScreen):
     def on_select_changed(self, changed: Select.Changed):
         if changed.select.id == "model-select":
             self.current_model = changed.select.value
-            store_data("settings.json", "model", self.current_model)
             model_file = find_q4_model_file(self.current_model)
+            if model_file is None:
+                self.notify("Q4 model file not found.")
+                return
             store_data("settings.json", "model_file", model_file)
+            store_data("settings.json", "model", self.current_model)
             self.notify("Model updated.")
         elif changed.select.id == "whisper-model-select":
             self.current_whisper_model = changed.select.value

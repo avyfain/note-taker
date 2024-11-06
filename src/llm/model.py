@@ -30,7 +30,6 @@ class LanguageModel:
             # llama_log_set(log_callback, ctypes.c_void_p())
             self.set_model(None)
             subscribe_to_data("settings.json", "model", self.set_model)
-            subscribe_to_data("settings.json", "model_file", self.set_model)
             subscribe_to_data("settings.json", "context_size", self.set_model)
 
     def set_model(self, _):
