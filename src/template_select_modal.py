@@ -21,11 +21,17 @@ class TemplateSelectModal(ModalScreen):
     def compose(self):
         yield Container(
             Static("Select a template:"),
-            Select(options=self.templates, id="template_select"),
+            Select(
+                options=self.templates, value=self.templates[1][1], id="template_select"
+            ),
             Button("Confirm", variant="primary", id="confirm"),
             Button("Cancel", variant="default", id="cancel"),
             classes="template-modal",
         )
+
+    def _on_mount(self, event):
+        self.focus_next("#confirm")
+        return super()._on_mount(event)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "confirm":
@@ -39,3 +45,11 @@ class TemplateSelectModal(ModalScreen):
                 self.dismiss((False, None))
         else:
             self.dismiss((False, None))
+
+    def _on_key(self, event):
+        if event.key == "escape":
+            self.dismiss((False, None))
+            # stop the bubbling of the event
+            event.stop()
+            return
+        return super()._on_key(event)
