@@ -33,7 +33,7 @@ Privacy-focused, command-line note-taking app that uses Locaal's on-device AI SD
 
 ## Prerequisites
 
-- Python 3.11 or higher
+- Python 3.11 or 3.12 (`simpler-whisper` requires doesn't support 3.13 yet)
 - Git
 
 ## Installation
